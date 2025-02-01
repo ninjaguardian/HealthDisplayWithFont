@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<!-- Assembly Metadata -->
+		<AssemblyTitle>HealthDisplayWithFont</AssemblyTitle>
+		<AssemblyName>HealthDisplayWithFont</AssemblyName>
+		<AssemblyDescription>Shows health above healthbar with a chosen font</AssemblyDescription>
+		<AssemblyProduct>HealthDisplayWithFont</AssemblyProduct>
+		<AssemblyConfiguration>Release</AssemblyConfiguration>
+		<AssemblyCopyright>Copyright © 2025</AssemblyCopyright>
+		<!--
+		 Version information for an assembly consists of the following four values:
+		      Major Version
+		      Minor Version
+		      Build Number
+		      Revision
+		-->
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Company>$(Authors)</Company>
+		<Title>Health Display With Font</Title>
+		<Authors>ninjaguardian (github)</Authors>
+		<Description>Shows health above healthbar with a chosen font</Description>
+		<Copyright>Copyright © 2025 ninjaguardian (github)</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Reference Include="MelonLoader">
+	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\MelonLoader.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+</Project>
