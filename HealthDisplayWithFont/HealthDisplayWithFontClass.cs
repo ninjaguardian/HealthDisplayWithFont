@@ -60,16 +60,17 @@ namespace HealthDisplayWithFont
                 MelonLogger.Msg("Set playfab master ID");
             }
         }
-        private static void LocalReloadHealthBar() {
-            LocalReloadHealthBar(false);
-        }
+        
+        //private static void LocalReloadHealthBar() {
+        //    LocalReloadHealthBar(false);
+        //}
 
-        private static void LocalReloadHealthBar(bool bypassChecks)
+        private static void LocalReloadHealthBar()//bool bypassChecks)
         {
-            if (bypassChecks == false && localHealthBar != null)
-            {
-                return;
-            }
+            //if (bypassChecks == false && localHealthBar != null)
+            //{
+            //    return;
+            //}
 
             GameObject healthBar = new("TextMeshPro");
             healthBar.transform.parent = Calls.Players.GetLocalHealthbarGameObject().transform.GetChild(1).GetChild(0);
