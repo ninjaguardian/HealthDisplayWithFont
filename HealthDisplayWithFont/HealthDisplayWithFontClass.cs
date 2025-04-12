@@ -73,11 +73,14 @@ namespace HealthDisplayWithFont
         {
             const byte maxTimeout = 10; //max 255 seconds
             byte timeout = maxTimeout;
-            while (GameObject.Find("/Health") == null || GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null) 
+            while (GameObject.Find("/Health") == null || GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null || localHealthBar == null) 
             {
                 yield return new WaitForSeconds(1);
                 if (--timeout == 0) {
                     MelonLogger.Error("Timeout while waiting for local health bar game object. Waited " + maxTimeout + " seconds.");
+                    MelonLogger.Error("Is Health null: " + GameObject.Find("/Health") == null);
+                    MelonLogger.Error("Is Healthbar null: " + GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null);
+                    MelonLogger.Error("Is localHealthBar null: " + localHealthBar == null);
                     yield break;
                 }
             }
@@ -85,7 +88,7 @@ namespace HealthDisplayWithFont
             MelonLogger.Warning(timeout);
 
             GameObject healthBar = new("TextMeshPro");
-            healthBar.transform.parent = GameObject.Find("/Health").transform.GetChild(1).GetChild(0);
+            healthBar.transform.SetParent(GameObject.Find("/Health").transform.GetChild(1).GetChild(0), false);
 
             TextMeshPro textRef = healthBar.AddComponent<TextMeshPro>();
             healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0.1f);
