@@ -110,62 +110,6 @@ namespace HealthDisplayWithFont
             return null;
         }
 
-        //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        //class PlayerHealthInitPatch
-        //{
-        //    static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
-        //    {
-        //        MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
-
-        //        if (controller.controllerType == ControllerType.Local)
-        //        { // Removes clones
-        //            bool foundYet = false;
-        //            foreach (GameObject obj in Object.FindObjectsOfType<GameObject>())
-        //            {
-        //                if (obj.name == "Player Controller(Clone)")
-        //                {
-        //                    if (foundYet)
-        //                        return;
-        //                    foundYet = true;
-        //                }
-        //            }
-        //        }
-
-        //        MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
-
-
-        //        if (controller.controllerType == ControllerType.Local)
-        //        {
-        //            Il2CppSystem.Reflection.MethodInfo? method = Il2CppType.Of<HealthDisplayWithFontClass>().GetMethod(
-        //                nameof(OnLocalHealthChanged),
-        //                Il2CppSystem.Reflection.BindingFlags.NonPublic | Il2CppSystem.Reflection.BindingFlags.Static
-        //            );
-
-        //            if (method == null)
-        //            {
-        //                MelonLogger.Error(nameof(OnLocalHealthChanged) + " method not found.");
-        //                return;
-        //            }
-
-        //            Il2CppSystem.Delegate del = Il2CppSystem.Delegate.CreateDelegate(
-        //                Il2CppType.Of<UnityAction<short>>(),
-        //                method
-        //            );
-
-        //            if (del == null)
-        //            {
-        //                MelonLogger.Error("Failed to create delegate for " + nameof(OnLocalHealthChanged));
-        //                return;
-        //            }
-
-        //            __instance.onDamageTaken.AddListener((UnityAction<short>)del);
-        //        }
-        //        else
-        //        {
-        //        }
-        //    }
-        //}
-
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
         class HealthBarPercentagePatch
         {
@@ -178,7 +122,7 @@ namespace HealthDisplayWithFont
             }
         }
 
-        private static void OnLocalHealthChanged()//short healthGained)
+        private static void OnLocalHealthChanged()
         {
             if (localHealthBar != null)
             {
