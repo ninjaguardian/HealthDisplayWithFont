@@ -1,18 +1,16 @@
-﻿using Il2CppRUMBLE.Managers;
-using Il2CppTMPro;
+﻿using Il2CppTMPro;
 using HarmonyLib;
 using MelonLoader;
 using RumbleModdingAPI;
 using UnityEngine;
 using Il2CppRUMBLE.Players.Subsystems;
 using Il2CppRUMBLE.Players;
-using Il2CppSystem.Collections.Generic;
 using HealthDisplayWithFont;
 using System.Collections;
 
 
-//it only works affter TEMPORARY REMOVE LATER is triggered
-//for some reason even though that is local... also check line 210!
+// Basicaly done. The only issue is that when loding into a scene, SetHealthBarPercentage is triggered.
+// Find a way to check the current scene when the code runs. Go from there.
 
 [assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "1.0.0", "ninjaguardian")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
@@ -28,9 +26,7 @@ namespace HealthDisplayWithFont
     public class HealthDisplayWithFontClass : MelonMod
     {
         private static TMP_FontAsset? fontAsset;
-        //private static readonly Dictionary<Player, GameObject?> healthBars = new();
         private static GameObject? localHealthBar;
-        //private static string? localPlayerPlayfabMasterID = null;
 
         /// <inheritdoc/>
         public override void OnLateInitializeMelon()
@@ -50,8 +46,6 @@ namespace HealthDisplayWithFont
                 MelonLogger.Warning($"Error loading font bundle. Using default font. Error: {ex.Message}");
             }
 
-            //Calls.onLocalPlayerHealthChanged += OnLocalHealthChanged;
-            Calls.onRemotePlayerHealthChanged += OnHealthChanged;
             Calls.onMapInitialized += MapInit;
         }
 
@@ -59,15 +53,6 @@ namespace HealthDisplayWithFont
         {
             MelonCoroutines.Start(LocalReloadHealthBar());
         }
-
-        //private static void SetPlayfabMasterID()
-        //{
-        //    if (localPlayerPlayfabMasterID == null)
-        //    {
-        //        localPlayerPlayfabMasterID = Calls.Players.GetLocalPlayer().Data.GeneralData.PlayFabMasterId;
-        //        MelonLogger.Msg("Set playfab master ID: " + localPlayerPlayfabMasterID);
-        //    }
-        //}
 
         private static IEnumerator LocalReloadHealthBar()
         {
@@ -77,10 +62,10 @@ namespace HealthDisplayWithFont
             {
                 yield return new WaitForSeconds(1);
                 if (--timeout == 0) {
-                    MelonLogger.Error("Timeout while waiting for local health bar game object. Waited " + maxTimeout + " seconds.");
-                    MelonLogger.Warning("Is Health null: " + GameObject.Find("/Health") == null + " (expected: false)");
-                    MelonLogger.Warning("Is Healthbar null: " + GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null + " (expected: false)");
-                    MelonLogger.Warning("Is localHealthBar null: " + localHealthBar == null + " (expected: true)");
+                    MelonLogger.Error($"Timeout while waiting for local health bar game object. Waited {maxTimeout} seconds.");
+                    MelonLogger.Warning($"Is Health null: {GameObject.Find("/Health") == null} (expected: false)");
+                    MelonLogger.Warning($"Is Healthbar null: {GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null} (expected: false)");
+                    MelonLogger.Warning($"Is localHealthBar null: {localHealthBar == null} (expected: true)");
                     yield break;
                 }
             }
@@ -101,38 +86,6 @@ namespace HealthDisplayWithFont
 
             localHealthBar = healthBar;
         }
-
-        //private static void RemoteReloadHealthBars(PlayerHealth instance, PlayerController controller)
-        //{
-        //    Player player = controller.assignedPlayer;
-
-        //    if (healthBars.ContainsKey(player) && healthBars[player] != null)
-        //    {
-        //        Object.Destroy(healthBars[player]);
-        //        healthBars.Remove(player);
-        //    }
-        //    else if (healthBars.ContainsKey(player)) 
-        //    {
-        //        healthBars.Remove(player);
-        //    }
-            
-        //    GameObject healthBar = new() { name = "TextMeshPro" };
-        //    healthBar.transform.parent = controller.gameObject.transform.GetChild(5).GetChild(0).GetChild(0);
-
-        //    healthBar.AddComponent<TextMeshPro>();
-        //    healthBar.transform.localPosition = new Vector3(-1.0564f, 0.0061f, 0.0907f);
-        //    healthBar.transform.localRotation = Quaternion.Euler(62.9944f, 260f, 0f);
-        //    healthBar.transform.localScale = new Vector3(0.015f, 0.007f, 0.015f);
-        //    TextMeshPro textRef = healthBar.GetComponent<TextMeshPro>();
-        //    textRef.text = player.Data.HealthPoints.ToString();
-
-        //    if (fontAsset != null)
-        //    {
-        //        textRef.font = fontAsset;
-        //    }
-
-        //    healthBars.Add(player, healthBar);
-        //}
 
         private static TMP_FontAsset? LoadFont(string[] fontNames)
         {
@@ -157,151 +110,75 @@ namespace HealthDisplayWithFont
             return null;
         }
 
-        //[HarmonyPatch(typeof(PlayerData)), HarmonyPatch(nameof(PlayerData.SetHealthPoints))]
-        ////[HarmonyPatch(typeof(PlayerData)), HarmonyPatch(nameof(PlayerData.HealthPoints), MethodType.Setter)]
-        ////[HarmonyPatch(typeof(PlayerData)), HarmonyPatch(nameof(PlayerData.HealthPoints))]
-        ////[HarmonyPatch(typeof(PlayerData)), HarmonyPatch("set_HealthPoints")]
-        //class PlayerDataSetHeathPatch
-        //{
-        //    static void Postfix(PlayerData __instance, short hp)
-        //    {
-        //        foreach (Player player in Calls.Players.GetAllPlayers())
-        //        {
-        //            if (__instance.Player == player)
-        //            {
-        //                MelonLogger.Warning($"Name: {player.Data.GeneralData.PublicUsername}, hp: {hp}");
-        //            }
-        //        }
-        //    }
-        //}
-
         //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        //class PlayerInitPatch
+        //class PlayerHealthInitPatch
         //{
-        //    static void Postfix(PlayerHealth __instance, PlayerController controller)
+        //    static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
         //    {
-        //        if (localPlayerPlayfabMasterID != null)
-        //        {
-        //            if (controller.assignedPlayer.Data.GeneralData.PlayFabMasterId != localPlayerPlayfabMasterID) {
-        //                MelonLogger.Warning($"TEMPORARY REMOVE LATER: Initializing health bar for remote player: {controller.assignedPlayer.Data.GeneralData.PublicUsername}");
-        //                RemoteReloadHealthBars(__instance, controller);
-        //            }
-        //            else if (localHealthBar != null)
+        //        MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
+
+        //        if (controller.controllerType == ControllerType.Local)
+        //        { // Removes clones
+        //            bool foundYet = false;
+        //            foreach (GameObject obj in Object.FindObjectsOfType<GameObject>())
         //            {
-        //                MelonLogger.Warning("LOCAL PLAYER DETECTED MAKE SURE TO TEST THIS TMR");
-        //                localHealthBar.GetComponent<TextMeshPro>().text = controller.assignedPlayer.Data.HealthPoints.ToString();
+        //                if (obj.name == "Player Controller(Clone)")
+        //                {
+        //                    if (foundYet)
+        //                        return;
+        //                    foundYet = true;
+        //                }
         //            }
+        //        }
+
+        //        MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
+
+
+        //        if (controller.controllerType == ControllerType.Local)
+        //        {
+        //            Il2CppSystem.Reflection.MethodInfo? method = Il2CppType.Of<HealthDisplayWithFontClass>().GetMethod(
+        //                nameof(OnLocalHealthChanged),
+        //                Il2CppSystem.Reflection.BindingFlags.NonPublic | Il2CppSystem.Reflection.BindingFlags.Static
+        //            );
+
+        //            if (method == null)
+        //            {
+        //                MelonLogger.Error(nameof(OnLocalHealthChanged) + " method not found.");
+        //                return;
+        //            }
+
+        //            Il2CppSystem.Delegate del = Il2CppSystem.Delegate.CreateDelegate(
+        //                Il2CppType.Of<UnityAction<short>>(),
+        //                method
+        //            );
+
+        //            if (del == null)
+        //            {
+        //                MelonLogger.Error("Failed to create delegate for " + nameof(OnLocalHealthChanged));
+        //                return;
+        //            }
+
+        //            __instance.onDamageTaken.AddListener((UnityAction<short>)del);
+        //        }
+        //        else
+        //        {
         //        }
         //    }
         //}
 
-        //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealth))]
-        //class PlayerHealthChangePatch
-        //{
-        //    static void Postfix(PlayerHealth __instance, short newHealth, short previousHealth, bool useEffects) //Possibly need `= true`
-        //    {
-        //        foreach (Player player in Calls.Players.GetAllPlayers()) {
-        //            if (__instance.parentController.assignedPlayer == player) {
-        //                MelonLogger.Warning($"Name: {player.Data.GeneralData.PublicUsername}, newhp: {newHealth}, prevhp {previousHealth}, effect {useEffects}");
-        //            }
-        //        }
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        //class PlayerInitPatch
-        //{
-        //    static void Postfix(PlayerController controller)
-        //    {
-        //        MelonCoroutines.Start(CheckPlayerHealth(controller));
-        //    }
-        //}
-
-        //private static IEnumerator CheckPlayerHealth(PlayerController controller)
-        //{
-        //    yield return new WaitForFixedUpdate();
-        //    if (controller.assignedPlayer.Data.GeneralData.PlayFabMasterId == localPlayerPlayfabMasterID)
-        //    {
-        //        MelonLogger.Warning($"TEMPORARY REMOVE LATER: Initializing health bar for local player: {controller.assignedPlayer.Data.GeneralData.PublicUsername}");
-        //        LocalReloadHealthBar();
-        //    }
-        //    else
-        //    {
-        //        MelonLogger.Warning($"TEMPORARY REMOVE LATER: Initializing health bar for remote player: {controller.assignedPlayer.Data.GeneralData.PublicUsername}");
-        //        RemoteReloadHealthBars(controller);
-        //    }
-        //    yield break;
-        //}
-
-        //[HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.AddRemotePlayer))]
-        //class AddPlayerPatch
-        //{
-        //    static void Postfix()
-        //    {
-        //        //if (GameObject.Find("/Health") != Calls.Players.GetLocalHealthbarGameObject()) {
-        //            //MelonLogger.Warning("*shrug*");
-        //        //}
-        //        //MelonLogger.Warning("add");
-        //        //foreach (Il2CppRUMBLE.Players.Player player in Calls.Players.GetAllPlayers())
-        //        //{
-        //        //    MelonLogger.Warning(player.Data.GeneralData.PublicUsername);
-        //        //}
-        //        //remoteReloadHealthBars();
-        //    }
-        //}
-
-        //[HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.RemovePlayer))]
-        //class RemovePlayerPatch
-        //{
-        //    //static void Prefix()
-        //    //{
-        //    //    MelonLogger.Warning("remove pre");
-        //    //    foreach (Il2CppRUMBLE.Players.Player player in Calls.Players.GetAllPlayers())
-        //    //    {
-        //    //        MelonLogger.Warning(player.Data.GeneralData.PublicUsername);
-        //    //    }
-        //    //}
-        //    //static void Postfix()
-        //    //{
-        //    //    MelonLogger.Warning("remove post");
-        //    //    foreach (Il2CppRUMBLE.Players.Player player in Calls.Players.GetAllPlayers())
-        //    //    {
-        //    //        MelonLogger.Warning(player.Data.GeneralData.PublicUsername);
-        //    //    }
-        //    //}
-        //    static void Postfix()
-        //    {
-        //        //remoteReloadHealthBars();
-        //    }
-        //}
-
-        [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        class PlayerHealthInitPatch 
-        { 
-            static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
+        [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
+        class HealthBarPercentagePatch
+        {
+            static void Postfix(ref PlayerHealth __instance, float currentHealth, float previousHealth, bool useEffects)
             {
-                MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
-
-                if (controller.controllerType == ControllerType.Local) { // Removes clones
-                    bool foundYet = false;
-                    foreach (GameObject obj in Object.FindObjectsOfType<GameObject>())
-                    {
-                        if (obj.name == "Player Controller(Clone)")
-                        {
-                            if (foundYet)
-                                return;
-                            foundYet = true;
-                        }
-                    }
+                if (__instance.parentController.controllerType == ControllerType.Local)
+                {
+                    OnLocalHealthChanged();
                 }
-
-                MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
-
-                __instance.onDamageTaken.AddListener((UnityEngine.Events.UnityAction<short>)OnLocalHealthChanged);
             }
         }
 
-        private static void OnLocalHealthChanged(short healthGained)
+        private static void OnLocalHealthChanged()//short healthGained)
         {
             if (localHealthBar != null)
             {
@@ -312,14 +189,6 @@ namespace HealthDisplayWithFont
                 MelonLogger.Error("Local health bar detected as null");
                 MapInit();
             }
-        }
-
-        private static void OnHealthChanged()
-        {
-            //foreach (KeyValuePair<Il2CppRUMBLE.Players.Player, GameObject> entry in healthBars)
-            //{
-            //    entry.Value.GetComponent<TextMeshPro>().text = entry.Key.Data.HealthPoints.ToString();
-            //}
         }
     }
 }
