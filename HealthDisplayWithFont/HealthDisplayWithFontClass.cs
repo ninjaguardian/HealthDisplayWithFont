@@ -8,9 +8,8 @@ using Il2CppRUMBLE.Players;
 using HealthDisplayWithFont;
 using System.Collections;
 
-
-// Basicaly done. The only issue is that when loding into a scene, SetHealthBarPercentage is triggered.
-// Find a way to check the current scene when the code runs. Go from there.
+// Test with clones
+// The issue only occurs after the playerhealth is initlizied
 
 [assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "1.0.0", "ninjaguardian")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
@@ -108,6 +107,37 @@ namespace HealthDisplayWithFont
                 }
             }
             return null;
+        }
+
+        [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
+        class PlayerHealthInitPatch
+        {
+            static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
+            {
+                MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
+
+                if (controller.controllerType == ControllerType.Local)
+                {
+                    bool foundYet = false;
+                    foreach (GameObject obj in Object.FindObjectsOfType<GameObject>()) // Removes clones
+                    {
+                        if (obj.name == "Player Controller(Clone)")
+                        {
+                            if (foundYet)
+                                return;
+                            foundYet = true;
+                        }
+                    }
+                }
+
+                MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
+
+
+                if (controller.controllerType == ControllerType.Local)
+                {
+                    MelonLogger.Warning("BLAH");
+                }
+            }
         }
 
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
