@@ -1,5 +1,5 @@
 # Health Display With Font
-![Photo](icon.png)
+![Photo](https://github.com/ninjaguardian/HealthDisplayWithFont/blob/master/icon.png)
 
 ## What is this
 This mod currently adds a number above your health bar that shows your HP in a custom font.
