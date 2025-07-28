@@ -99,7 +99,7 @@ jobs:
             -password "${{ secrets.STEAM_PASSWORD }}" \
             -dir ./game_files
       - name: Fetch Game Files (Windows)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           .\depotdl\DepotDownloader.exe `
