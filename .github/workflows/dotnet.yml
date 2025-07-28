@@ -139,6 +139,8 @@ jobs:
           cpp2il \
             --game-path game_files \
             --output-to deps/MelonLoader/Il2CppAssemblies \
+            --exe-name RUMBLE.exe \
+            --use-processor attributeanalyzer attributeinjector \
             --output-as dummydll
 
       - name: Save cache
@@ -162,7 +164,7 @@ jobs:
           dotnet-version: '6.0.x'
         
       - name: Build
-        run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
       
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
