@@ -79,6 +79,11 @@ jobs:
         with:
           path: deps/Il2CppAssemblies
           key: Il2CppAssemblies-${{ env.ManifestId }}
+        
+      - name: test
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ls -R deps/Il2CppAssemblies
 
       - name: Install DepotDownloader (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
