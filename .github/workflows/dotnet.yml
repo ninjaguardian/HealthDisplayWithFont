@@ -76,9 +76,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           wget -qO depotdl.tar.gz \
-            https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.tar.gz
+            https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.zip
           mkdir depotdl
-          tar -xzf depotdl.tar.gz -C depotdl
+          unzip depotdl.tar.gz -d depotdl
           chmod +x depotdl/DepotDownloader
       - name: Install DepotDownloader (Windows)
         if: matrix.os == 'windows-latest'
