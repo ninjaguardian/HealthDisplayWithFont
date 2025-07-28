@@ -78,17 +78,15 @@ jobs:
         run: steamcmd +quit
         continue-on-error: true
 
+      - name: Decode Steam config on Windows
+        shell: cmd
+        run: |
+          echo ${{ secrets.STEAM_CERTIFICATE }} > steamconfig.b64
+          certutil -decode steamconfig.b64 config\config.vdf
+
       - name: Setup install dir
         shell: cmd
-        run: steamcmd +force_install_dir +quit
-
-      - name: Login to Steam
-        shell: cmd
-        run: steamcmd +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +quit
-
-      - name: Install RUMBLE
-        shell: cmd
-        run: steamcmd +app_update 890550 validate +quit
+        run: steamcmd +force_install_dir .\deps\ +login ${{ secrets.STEAM_USERNAME }} +app_update 890550 validate +quit
 
       - name: test
         shell: cmd
