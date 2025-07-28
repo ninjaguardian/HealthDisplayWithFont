@@ -130,7 +130,7 @@ jobs:
         shell: cmd
         run: |
           mkdir cpp2il-bin
-          curl -Lo cpp2il-bin\cpp2il.exe https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Win64.exe
+          curl -Lo cpp2il-bin\cpp2il.exe https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Windows.exe
           echo cpp2il-bin>>%GITHUB_PATH%
           
       - name: Run Cpp2IL (Linux)
