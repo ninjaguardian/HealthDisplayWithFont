@@ -49,22 +49,16 @@ jobs:
       - name: Download steamcmd
         shell: pwsh
         run: |
-          mkdir install
           $steamcmdUrl = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
-          $steamcmdZip = "install\steamcmd.zip"
+          $steamcmdZip = "steamcmd.zip"
           Write-Host "Downloading steamcmd from $steamcmdUrl"
           Invoke-WebRequest -Uri $steamcmdUrl -OutFile $steamcmdZip
           Write-Host "Extracting steamcmd"
-          Expand-Archive -Path $steamcmdZip -DestinationPath install -Force
+          Expand-Archive -Path $steamcmdZip -DestinationPath . -Force
 
       - name: Install RUMBLE
         shell: cmd
-        run: |
-          install\steamcmd.exe
-          force_install_dir ./deps/
-          login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }}
-          app_update 890550 validate
-          quit
+        run: steamcmd +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +force_install_dir ./deps/ +app_update 890550 validate +quit
 
       - name: test
         shell: cmd
