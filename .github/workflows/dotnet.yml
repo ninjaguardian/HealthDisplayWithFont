@@ -96,18 +96,19 @@ jobs:
         shell: pwsh
         run: |
           $folderPath = "deps\MelonLoader\Il2CppAssemblies\"
-          $exePath = "deps\RUMBLE.exe"
 
-          $attempts = 0
-          while (-not (Test-Path $folderPath) -and $attempts -lt 10) {
-              & "deps\RUMBLE.exe"
-              Start-Sleep -Seconds 60
-              $attempts++
+          Start-Process -FilePath "deps\RUMBLE.exe"
+
+          $timeout = 600
+          $elapsed = 0
+          while (-not (Test-Path $folderPath) -and $elapsed -lt $timeout) {
+            Start-Sleep -Seconds 1
+            $elapsed++
           }
 
           if (-not (Test-Path $folderPath)) {
-              Write-Error "Folder was not created after $attempts attempts"
-              exit 1
+            Write-Error "Timed out waiting for folder: $folderPath"
+            exit 1
           } else {
             Start-Sleep -Seconds 10
           }
