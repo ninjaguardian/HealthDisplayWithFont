@@ -23,7 +23,7 @@ jobs:
         id: cache-deps
         uses: actions/cache/restore@v4
         with:
-          key: thunderstore-deps-${{ hashFiles('manifest.json') }}
+          key: fail-thunderstore-deps-${{ hashFiles('manifest.json') }}
           path: deps
 
       - name: Download dependencies
@@ -54,7 +54,7 @@ jobs:
       - name: Clean files in deps
         if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
-        run: Get-ChildItem -Path "deps" -File | Remove-Item -Force
+        run: Get-ChildItem -Path "deps" -File | Where-Object { $_.Name -ne "version.dll" } | Remove-Item -Force
 
       - name: Save Thunderstore deps cache
         if: steps.cache-deps.outputs.cache-hit != 'true'
