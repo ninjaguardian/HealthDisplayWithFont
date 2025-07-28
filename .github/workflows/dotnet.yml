@@ -152,7 +152,7 @@ jobs:
             --game-path game_files ^
             --output-to deps\MelonLoader\Il2CppAssemblies ^
             --exe-name RUMBLE ^
-            --use-processor attributeinjector ^
+            --use-processor attributeanalyzer attributeinjector ^
             --output-as dummydll
 
       - name: Save cache
