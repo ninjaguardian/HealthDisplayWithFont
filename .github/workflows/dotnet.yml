@@ -114,6 +114,7 @@ jobs:
         run: |
           wget -qO cpp2il https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
           chmod +x cpp2il
+          sudo mv cpp2il /usr/local/bin/
           
       - name: Run Cpp2IL (Linux)
         if: matrix.os == 'ubuntu-latest'
