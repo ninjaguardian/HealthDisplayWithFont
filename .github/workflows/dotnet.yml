@@ -122,7 +122,7 @@ jobs:
           mkdir -p deps/Il2CppAssemblies
           cpp2il \
             --game-path game_files \
-            --output-to deps/MelonLoader/Il2CppAssemblies
+            --list-output-formats
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
