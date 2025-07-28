@@ -81,7 +81,9 @@ jobs:
       - name: Decode Steam config on Windows
         shell: cmd
         run: |
-          $content = @"${{ secrets.STEAM_CERTIFICATE }}"@
+          $content = @"
+          ${{ secrets.STEAM_CERTIFICATE }}
+          "@
           $content | Out-File -Encoding ascii steamconfig.b64
           certutil -decode steamconfig.b64 config\config.vdf
 
