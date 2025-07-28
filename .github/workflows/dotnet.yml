@@ -59,6 +59,7 @@ jobs:
       - name: Run steamcmd
         shell: cmd
         run: steamcmd +quit
+        continue-on-error: true
 
       - name: Install RUMBLE
         shell: cmd
