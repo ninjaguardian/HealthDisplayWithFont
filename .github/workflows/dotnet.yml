@@ -97,7 +97,6 @@ jobs:
             -depot 890551 \
             -username ${{ secrets.STEAM_USERNAME }} \
             -password ${{ secrets.STEAM_PASSWORD }} \
-            -authcode ${{ secrets.STEAM_GUARD_CODE }} \
             -dir ./game_files
       - name: Fetch Game Files (Windows)
         if: matrix.os == 'ubuntu-latest'
@@ -108,8 +107,7 @@ jobs:
             -depot 890551 `
             -username "${{ secrets.STEAM_USERNAME }}" `
             -password "${{ secrets.STEAM_PASSWORD }}" `
-            -authcode "${{ secrets.STEAM_GUARD_CODE }}" `
-            -dir .\game_files'
+            -dir .\game_files
 
       - name: Install Cpp2IL (Linux)
         if: matrix.os == 'ubuntu-latest'
