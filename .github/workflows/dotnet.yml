@@ -15,9 +15,6 @@ jobs:
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}/deps
-      DepotDownloaderVer: DepotDownloader_3.4.0
-      Cpp2ILVer: 2022.1.0-pre-release.19
-      ManifestId: "1922173029348684036"
         
     steps:
       - uses: actions/checkout@v4
@@ -62,11 +59,12 @@ jobs:
 
       - name: Install RUMBLE
         shell: cmd
-        run: install\steamcmd.exe ^
-          +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} ^
-          +force_install_dir ./deps/ ^
-          +app_update 890550 validate ^
-          +quit
+        run: |
+          install\steamcmd.exe
+          force_install_dir ./deps/
+          login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }}
+          app_update 890550 validate
+          quit
 
       - name: test
         shell: cmd
