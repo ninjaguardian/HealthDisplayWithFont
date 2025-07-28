@@ -14,10 +14,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}/deps
+      DepotDownloaderVer: latest
+      Cpp2ILVer: 2022.1.0-pre-release.19
         
     steps:
       - uses: actions/checkout@v4
@@ -69,6 +71,60 @@ jobs:
             Write-Host "Extracting $zip"
             Expand-Archive -Path $zip -DestinationPath deps -Force
           }
+
+      - name: Install DepotDownloader (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          wget -qO depotdl.tar.gz \
+            https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.tar.gz
+          mkdir depotdl
+          tar -xzf depotdl.tar.gz -C depotdl
+          chmod +x depotdl/DepotDownloader
+      - name: Install DepotDownloader (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-windows-x64.zip" `
+            -OutFile "depotdl.zip"
+          Expand-Archive -Path depotdl.zip -DestinationPath depotdl
+
+      - name: Fetch Game Files (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ./depotdl/DepotDownloader \
+            -app 890550 \
+            -depot 890551 \
+            -username ${{ secrets.STEAM_USERNAME }} \
+            -password ${{ secrets.STEAM_PASSWORD }} \
+            -authcode ${{ secrets.STEAM_GUARD_CODE }} \
+            -dir ./game_files
+      - name: Fetch Game Files (Windows)
+        if: matrix.os == 'ubuntu-latest'
+        shell: pwsh
+        run: |
+          .\depotdl\DepotDownloader.exe `
+            -app 890550 `
+            -depot 890551 `
+            -username "${{ secrets.STEAM_USERNAME }}" `
+            -password "${{ secrets.STEAM_PASSWORD }}" `
+            -authcode "${{ secrets.STEAM_GUARD_CODE }}" `
+            -dir .\game_files'
+
+      - name: Install Cpp2IL (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          wget -qO cpp2il.zip https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
+          mkdir cpp2il && unzip cpp2il.zip -d cpp2il && chmod +x cpp2il/Cpp2IL
+          
+      - name: Run Cpp2IL (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir -p deps/Il2CppAssemblies
+          cpp2il/Cpp2IL \
+            --game-path game_files \
+            --just-give-me-dlls-asap-dammit \
+            --output-dir deps/Il2CppAssemblies
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
