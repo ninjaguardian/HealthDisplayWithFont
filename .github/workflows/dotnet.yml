@@ -103,9 +103,9 @@ jobs:
           ./depotdl/DepotDownloader \
             -app 890550 \
             -depot 890551 \
+            -manifest ${{ env.ManifestId }} \
             -username "${{ secrets.STEAM_USERNAME }}" \
             -password "${{ secrets.STEAM_PASSWORD }}" \
-            -manifest "${{ env.ManifestId }}" \
             -dir ./game_files
       - name: Fetch Game Files (Windows)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
@@ -114,9 +114,9 @@ jobs:
           .\depotdl\DepotDownloader.exe `
             -app 890550 `
             -depot 890551 `
+            -manifest ${{ env.ManifestId }} `
             -username "${{ secrets.STEAM_USERNAME }}" `
             -password "${{ secrets.STEAM_PASSWORD }}" `
-            -manifest "${{ env.ManifestId }}" `
             -dir .\game_files
 
       - name: Install Cpp2IL (Linux)
