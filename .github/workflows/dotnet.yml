@@ -11,10 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: windows-latest
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}/deps
@@ -25,24 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install jq (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Download dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          mkdir -p deps
-          for dep in $(jq -r '.dependencies[]' manifest.json); do
-            # split "USER-PACKAGE-VER" into components
-            IFS='-' read -r user pkg ver <<< "$dep"
-            url="https://thunderstore.io/package/download/${user}/${pkg}/${ver}/"
-            out="deps/${user}-${pkg}-${ver}.zip"
-            echo "Fetching $url → $out"
-            wget -O "$out" "$url"
-          done
-      - name: Download dependencies (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Download dependencies
         shell: pwsh
         run: |
           $deps = (Get-Content manifest.json | ConvertFrom-Json).dependencies
@@ -56,15 +36,7 @@ jobs:
             Invoke-WebRequest -Uri $url -OutFile $out
           }
 
-      - name: Unzip dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          for zip in deps/*.zip; do
-            echo "Extracting $zip"
-            unzip -n "$zip" -d deps
-          done
-      - name: Unzip dependencies (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Unzip dependencies
         shell: pwsh
         run: |
           Get-ChildItem deps\*.zip | ForEach-Object {
@@ -73,110 +45,39 @@ jobs:
             Expand-Archive -Path $zip -DestinationPath deps -Force
           }
 
-      - name: Restore cache
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: deps/MelonLoader/Il2CppAssemblies
-          key: ${{ runner.os }}-Il2CppAssemblies-${{ env.ManifestId }}
-
-      - name: Install DepotDownloader (Linux)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
-        run: |
-          wget -qO depotdl.zip \
-            https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.zip
-          mkdir depotdl
-          unzip depotdl.zip -d depotdl
-          chmod +x depotdl/DepotDownloader
-      - name: Install DepotDownloader (Windows)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          Invoke-WebRequest `
-            -Uri "https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-windows-x64.zip" `
-            -OutFile "depotdl.zip"
-          Expand-Archive -Path depotdl.zip -DestinationPath depotdl
-
-      - name: Fetch Game Files (Linux)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
-        run: |
-          ./depotdl/DepotDownloader \
-            -app 890550 \
-            -depot 890551 \
-            -manifest ${{ env.ManifestId }} \
-            -username "${{ secrets.STEAM_USERNAME }}" \
-            -password "${{ secrets.STEAM_PASSWORD }}" \
-            -dir ./game_files
-      - name: Fetch Game Files (Windows)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          .\depotdl\DepotDownloader.exe `
-            -app 890550 `
-            -depot 890551 `
-            -manifest ${{ env.ManifestId }} `
-            -username "${{ secrets.STEAM_USERNAME }}" `
-            -password "${{ secrets.STEAM_PASSWORD }}" `
-            -dir .\game_files
-
-      - name: Install Cpp2IL (Linux)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
-        run: |
-          wget -qO cpp2il https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
-          chmod +x cpp2il
-          sudo mv cpp2il /usr/local/bin/
-      - name: Install Cpp2IL (Windows)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          mkdir cpp2il-bin
-          curl -Lo cpp2il-bin\cpp2il.exe https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Windows.exe
-          echo cpp2il-bin>>%GITHUB_PATH%
-          
-      - name: Run Cpp2IL (Linux)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
-        run: |
-          mkdir -p deps/MelonLoader/Il2CppAssemblies
-          cpp2il \
-            --game-path game_files \
-            --output-to deps/MelonLoader/Il2CppAssemblies \
-            --exe-name RUMBLE \
-            --use-processor attributeanalyzer attributeinjector \
-            --output-as dummydll
-      - name: Run Cpp2IL (Windows)
-        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          mkdir deps\MelonLoader\Il2CppAssemblies
-          cpp2il.exe ^
-            --game-path game_files ^
-            --output-to deps\MelonLoader\Il2CppAssemblies ^
-            --exe-name RUMBLE ^
-            --use-processor attributeanalyzer attributeinjector ^
-            --output-as dummydll
-
-      - name: Save cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: deps/MelonLoader/Il2CppAssemblies
-          key: ${{ runner.os }}-Il2CppAssemblies-${{ env.ManifestId }}
-
-      - name: Clean files in deps (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: find deps/ -maxdepth 1 -type f -delete
-      - name: Clean files in deps (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Clean files in deps
         shell: pwsh
         run: Get-ChildItem -Path "deps" -File | Remove-Item -Force
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '6.0.x'
+      - name: Download steamcmd
+        shell: pwsh
+        run: |
+          $steamcmdUrl = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+          $steamcmdZip = "install\steamcmd.zip"
+          Write-Host "Downloading steamcmd from $steamcmdUrl"
+          Invoke-WebRequest -Uri $steamcmdUrl -OutFile $steamcmdZip
+          Write-Host "Extracting steamcmd"
+          Expand-Archive -Path $steamcmdZip -DestinationPath install -Force
+
+      - name: Install RUMBLE
+        shell: cmd
+        run: install\steamcmd.exe ^
+          +login ${{ secrets.STEAM_USERNAME }} ^
+          +force_install_dir ./deps/ ^
+          +app_update 890550 validate ^
+          +quit
+
+      - name: test
+        shell: cmd
+        run: ls -R deps\
+
+      # - name: Setup .NET SDK
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: '6.0.x'
         
-      - name: Build
-        run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
+      # - name: Build
+      #   run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
       
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
+      # - name: Test
+      #   run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
