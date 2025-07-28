@@ -1,6 +1,9 @@
 # Health Display With Font
 ![Photo](icon.png)
 
+## What is this
+This mod currently adds a number above your health bar that shows your HP in a custom font.
+
 ## Instructions
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)
 2. Run RUMBLE without mods
