@@ -122,8 +122,7 @@ jobs:
           mkdir -p deps/Il2CppAssemblies
           cpp2il \
             --game-path game_files \
-            --just-give-me-dlls-asap-dammit \
-            --output-dir deps/MelonLoader/Il2CppAssemblies
+            --output-to deps/MelonLoader/Il2CppAssemblies
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
