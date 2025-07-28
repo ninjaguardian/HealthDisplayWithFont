@@ -20,6 +20,7 @@ jobs:
       LIBSDIRPATH: ${{ github.workspace }}/deps
       DepotDownloaderVer: DepotDownloader_3.4.0
       Cpp2ILVer: 2022.1.0-pre-release.19
+      ManifestId: 1922173029348684036
         
     steps:
       - uses: actions/checkout@v4
@@ -72,8 +73,15 @@ jobs:
             Expand-Archive -Path $zip -DestinationPath deps -Force
           }
 
+      - name: Restore cache
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: deps/Il2CppAssemblies
+          key: Il2CppAssemblies-${{ env.ManifestId }}
+
       - name: Install DepotDownloader (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
         run: |
           wget -qO depotdl.zip \
             https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.zip
@@ -81,7 +89,7 @@ jobs:
           unzip depotdl.zip -d depotdl
           chmod +x depotdl/DepotDownloader
       - name: Install DepotDownloader (Windows)
-        if: matrix.os == 'windows-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           Invoke-WebRequest `
@@ -90,16 +98,17 @@ jobs:
           Expand-Archive -Path depotdl.zip -DestinationPath depotdl
 
       - name: Fetch Game Files (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
         run: |
           ./depotdl/DepotDownloader \
             -app 890550 \
             -depot 890551 \
             -username "${{ secrets.STEAM_USERNAME }}" \
             -password "${{ secrets.STEAM_PASSWORD }}" \
+            -manifest "${{ env.ManifestId }}" \
             -dir ./game_files
       - name: Fetch Game Files (Windows)
-        if: matrix.os == 'windows-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
         shell: pwsh
         run: |
           .\depotdl\DepotDownloader.exe `
@@ -107,22 +116,30 @@ jobs:
             -depot 890551 `
             -username "${{ secrets.STEAM_USERNAME }}" `
             -password "${{ secrets.STEAM_PASSWORD }}" `
+            -manifest "${{ env.ManifestId }}" `
             -dir .\game_files
 
       - name: Install Cpp2IL (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
         run: |
           wget -qO cpp2il https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
           chmod +x cpp2il
           sudo mv cpp2il /usr/local/bin/
           
       - name: Run Cpp2IL (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
         run: |
           mkdir -p deps/Il2CppAssemblies
           cpp2il \
             --game-path game_files \
-            --list-output-formats
+            --output-to deps/MelonLoader/Il2CppAssemblies \
+            --output-as dummydll
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: deps/Il2CppAssemblies
+          key: Il2CppAssemblies-${{ env.ManifestId }}
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
