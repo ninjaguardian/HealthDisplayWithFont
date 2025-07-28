@@ -56,6 +56,10 @@ jobs:
           Write-Host "Extracting steamcmd"
           Expand-Archive -Path $steamcmdZip -DestinationPath . -Force
 
+      - name: Run steamcmd
+        shell: cmd
+        run: steamcmd +quit
+
       - name: Install RUMBLE
         shell: cmd
         run: steamcmd +force_install_dir ./deps/ +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update 890550 validate +quit
