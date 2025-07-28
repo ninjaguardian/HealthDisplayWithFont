@@ -95,8 +95,8 @@ jobs:
           ./depotdl/DepotDownloader \
             -app 890550 \
             -depot 890551 \
-            -username ${{ secrets.STEAM_USERNAME }} \
-            -password ${{ secrets.STEAM_PASSWORD }} \
+            -username "${{ secrets.STEAM_USERNAME }}" \
+            -password "${{ secrets.STEAM_PASSWORD }}" \
             -dir ./game_files
       - name: Fetch Game Files (Windows)
         if: matrix.os == 'ubuntu-latest'
