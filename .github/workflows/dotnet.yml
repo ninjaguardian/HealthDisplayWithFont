@@ -78,13 +78,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: deps/MelonLoader/Il2CppAssemblies
-          key: Il2CppAssemblies-${{ env.ManifestId }}
-        
-      - name: test
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          mkdir -p deps/MelonLoader/Il2CppAssemblies
-          ls -R deps/MelonLoader/Il2CppAssemblies
+          key: aIl2CppAssemblies-${{ env.ManifestId }}
 
       - name: Install DepotDownloader (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
