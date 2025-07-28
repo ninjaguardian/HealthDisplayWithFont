@@ -23,9 +23,6 @@
 		<Platforms>x64</Platforms>
 		<Prefer32Bit>False</Prefer32Bit>
 		<PackageProjectUrl>https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont</PackageProjectUrl>
-
-		<LibsDirPath>$(LIBSDIRPATH)</LibsDirPath>
-		<LibsDirPath Condition="'$(LibsDirPath)'==''">C:\Program Files (x86)\Steam\steamapps\common\RUMBLE</LibsDirPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

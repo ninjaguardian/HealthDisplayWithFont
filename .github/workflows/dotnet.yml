@@ -60,7 +60,6 @@ jobs:
             echo "Extracting $zip"
             unzip -n "$zip" -d deps
           done
-          ls ${{ env.LIBSDIRPATH }}/MelonLoader/net6/
       - name: Unzip dependencies (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh
@@ -85,7 +84,7 @@ jobs:
           dotnet-version: '6.0.x'
         
       - name: Build
-        run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet build --configuration Release /p:LibsDirPath=${{ env.LIBSDIRPATH }}
       
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet test --configuration Release --no-build --verbosity normal /p:LibsDirPath=${{ env.LIBSDIRPATH }}
