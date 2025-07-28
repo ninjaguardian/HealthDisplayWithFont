@@ -52,6 +52,7 @@ jobs:
       - name: Download steamcmd
         shell: pwsh
         run: |
+          mkdir install
           $steamcmdUrl = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
           $steamcmdZip = "install\steamcmd.zip"
           Write-Host "Downloading steamcmd from $steamcmdUrl"
