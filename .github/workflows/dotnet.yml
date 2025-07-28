@@ -78,7 +78,30 @@ jobs:
         run: steamcmd +quit
         continue-on-error: true
 
-      - name: Decode Steam config on Windows
+      - name: Get RUMBLE version
+        shell: pwsh
+        run: |
+          $output = .\steamcmd.exe +login anonymous +app_info_print 890550 +quit
+          $buildidLine = $output | Where-Object { $_ -match '"buildid"' }
+          $buildid = $buildidLine -replace '.*"buildid"\s+"(\d+)".*', '$1'
+          echo "RUMBLEVER=$buildid" >> $GITHUB_ENV
+
+      - name: Get MelonLoader version
+        shell: pwsh
+        run: |
+          $melon_ver = ((Get-Content manifest.json | ConvertFrom-Json).dependencies | Where-Object { $_ -match 'MelonLoader' }) -replace '.*-',''
+          echo "MELONLOADERVER=$melon_ver" >> $GITHUB_ENV
+
+      - name: Restore il2cpp cache
+        id: cache-il2cpp
+        if: ${{ env.RUMBLEVER != '' && env.MELONLOADERVER != '' }}
+        uses: actions/cache/restore@v4
+        with:
+          key: il2cpp-${{ env.RUMBLEVER }}-${{ env.MELONLOADERVER }}
+          path: deps\MelonLoader\Il2CppAssemblies
+
+      - name: Decode Steam config
+        if: steps.cache-il2cpp.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           $content = @"
@@ -89,10 +112,12 @@ jobs:
           certutil -decode steamconfig.b64 config\config.vdf
 
       - name: Setup install dir
+        if: steps.cache-il2cpp.outputs.cache-hit != 'true'
         shell: cmd
         run: steamcmd +force_install_dir .\deps\ +login ${{ secrets.STEAM_USERNAME }} +app_update 890550 validate +quit
 
       - name: Run EXE until folder exists
+        if: steps.cache-il2cpp.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           $folderPath = "deps\MelonLoader\Il2CppAssemblies\"
@@ -112,6 +137,13 @@ jobs:
           } else {
             Start-Sleep -Seconds 10
           }
+
+      - name: Save il2cpp cache
+        if: ${{ env.RUMBLEVER != '' && env.MELONLOADERVER != '' && steps.cache-il2cpp.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          key: il2cpp-${{ env.RUMBLEVER }}-${{ env.MELONLOADERVER }}
+          path: deps\MelonLoader\Il2CppAssemblies
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
