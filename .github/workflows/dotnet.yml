@@ -19,7 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore Thunderstore deps cache
+        id: cache-deps
+        uses: actions/cache/restore@v4
+        with:
+          key: thunderstore-deps-${{ hashFiles('manifest.json') }}
+          path: deps
+
       - name: Download dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           $deps = (Get-Content manifest.json | ConvertFrom-Json).dependencies
@@ -34,6 +42,7 @@ jobs:
           }
 
       - name: Unzip dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           Get-ChildItem deps\*.zip | ForEach-Object {
@@ -43,8 +52,16 @@ jobs:
           }
 
       - name: Clean files in deps
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: Get-ChildItem -Path "deps" -File | Remove-Item -Force
+
+      - name: Save Thunderstore deps cache
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: thunderstore-deps-${{ hashFiles('manifest.json') }}
+          path: deps
 
       - name: Download steamcmd
         shell: pwsh
@@ -56,14 +73,22 @@ jobs:
           Write-Host "Extracting steamcmd"
           Expand-Archive -Path $steamcmdZip -DestinationPath . -Force
 
-      - name: Run steamcmd
+      - name: Install steamcmd
         shell: cmd
         run: steamcmd +quit
         continue-on-error: true
 
+      - name: Setup install dir
+        shell: cmd
+        run: steamcmd +force_install_dir +quit
+
+      - name: Login to Steam
+        shell: cmd
+        run: steamcmd +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +quit
+
       - name: Install RUMBLE
         shell: cmd
-        run: steamcmd +force_install_dir ./deps/ +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update 890550 validate +quit
+        run: steamcmd +app_update 890550 validate +quit
 
       - name: test
         shell: cmd
