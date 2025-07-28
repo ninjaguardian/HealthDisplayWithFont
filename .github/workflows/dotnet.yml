@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}/deps
@@ -78,7 +78,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: deps/MelonLoader/Il2CppAssemblies
-          key: aIl2CppAssemblies-${{ env.ManifestId }}
+          key: ${{ runner.os }}-Il2CppAssemblies-${{ env.ManifestId }}
 
       - name: Install DepotDownloader (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
@@ -125,6 +125,13 @@ jobs:
           wget -qO cpp2il https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
           chmod +x cpp2il
           sudo mv cpp2il /usr/local/bin/
+      - name: Install Cpp2IL (Windows)
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          mkdir cpp2il-bin
+          curl -Lo cpp2il-bin\cpp2il.exe https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Win64.exe
+          echo cpp2il-bin>>%GITHUB_PATH%
           
       - name: Run Cpp2IL (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
@@ -133,8 +140,19 @@ jobs:
           cpp2il \
             --game-path game_files \
             --output-to deps/MelonLoader/Il2CppAssemblies \
-            --exe-name RUMBLE.exe \
+            --exe-name RUMBLE \
             --use-processor attributeanalyzer attributeinjector \
+            --output-as dummydll
+      - name: Run Cpp2IL (Windows)
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'windows-latest'
+        shell: cmd
+        run: |
+          mkdir deps\MelonLoader\Il2CppAssemblies
+          cpp2il.exe ^
+            --game-path game_files ^
+            --output-to deps\MelonLoader\Il2CppAssemblies ^
+            --exe-name RUMBLE ^
+            --use-processor attributeinjector ^
             --output-as dummydll
 
       - name: Save cache
@@ -142,7 +160,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: deps/MelonLoader/Il2CppAssemblies
-          key: Il2CppAssemblies-${{ env.ManifestId }}
+          key: ${{ runner.os }}-Il2CppAssemblies-${{ env.ManifestId }}
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
