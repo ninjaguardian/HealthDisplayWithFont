@@ -60,6 +60,7 @@ jobs:
             echo "Extracting $zip"
             unzip -n "$zip" -d deps
           done
+          ls ${{ env.LIBSDIRPATH }}/MelonLoader/net6/
       - name: Unzip dependencies (Windows)
         if: matrix.os == 'windows-latest'
         shell: pwsh

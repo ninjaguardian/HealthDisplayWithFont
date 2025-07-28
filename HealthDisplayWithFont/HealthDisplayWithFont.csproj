@@ -20,7 +20,8 @@
 		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
 		<FileVersion>$(VersionPrefix).0</FileVersion>
 		<PackageIcon>iconlowres.png</PackageIcon>
-		<Platforms>AnyCPU;x64</Platforms>
+		<Platforms>x64</Platforms>
+		<Prefer32Bit>False</Prefer32Bit>
 		<PackageProjectUrl>https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont</PackageProjectUrl>
 
 		<LibsDirPath>$(LIBSDIRPATH)</LibsDirPath>
