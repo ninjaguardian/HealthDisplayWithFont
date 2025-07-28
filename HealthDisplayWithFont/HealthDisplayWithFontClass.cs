@@ -24,8 +24,8 @@ namespace HealthDisplayWithFont
     /// </summary>
     public class HealthDisplayWithFontClass : MelonMod
     {
-        private static TMP_FontAsset? fontAsset;
-        private static GameObject? localHealthBar;
+        private static TMP_FontAsset fontAsset;
+        private static GameObject localHealthBar;
 
         /// <inheritdoc/>
         public override void OnLateInitializeMelon()
@@ -86,14 +86,14 @@ namespace HealthDisplayWithFont
             localHealthBar = healthBar;
         }
 
-        private static TMP_FontAsset? LoadFont(string[] fontNames)
+        private static TMP_FontAsset LoadFont(string[] fontNames)
         {
             Il2CppAssetBundle bundle = Il2CppAssetBundleManager.LoadFromFile(@"UserData\HealthDisplayWithFont\fontbundle");
             foreach (string fontName in fontNames)
             {
                 try
                 {
-                    Font? loadedFont = Object.Instantiate(bundle.LoadAsset<Font>(fontName));
+                    Font loadedFont = Object.Instantiate(bundle.LoadAsset<Font>(fontName));
                     if (loadedFont != null)
                     {
                         TMP_FontAsset myFont = TMP_FontAsset.CreateFontAsset(loadedFont);

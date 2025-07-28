@@ -23,7 +23,7 @@ jobs:
         id: cache-deps
         uses: actions/cache/restore@v4
         with:
-          key: fail-thunderstore-deps-${{ hashFiles('manifest.json') }}
+          key: thunderstore-deps-${{ hashFiles('manifest.json') }}
           path: deps
 
       - name: Download dependencies
