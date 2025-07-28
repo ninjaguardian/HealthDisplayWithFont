@@ -85,6 +85,7 @@ jobs:
           ${{ secrets.STEAM_CERTIFICATE }}
           "@
           $content | Out-File -Encoding ascii steamconfig.b64
+          if (Test-Path "config\config.vdf") { Remove-Item "config\config.vdf" -Force }
           certutil -decode steamconfig.b64 config\config.vdf
 
       - name: Setup install dir
