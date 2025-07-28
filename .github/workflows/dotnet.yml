@@ -79,7 +79,7 @@ jobs:
         continue-on-error: true
 
       - name: Decode Steam config on Windows
-        shell: cmd
+        shell: pwsh
         run: |
           $content = @"
           ${{ secrets.STEAM_CERTIFICATE }}
