@@ -22,6 +22,9 @@
 		<PackageIcon>iconlowres.png</PackageIcon>
 		<Platforms>AnyCPU;x64</Platforms>
 		<PackageProjectUrl>https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont</PackageProjectUrl>
+
+		<LibsDirPath>$(LIBSDIRPATH)</LibsDirPath>
+		<LibsDirPath Condition="'$(LibsDirPath)'==''">C:\Program Files (x86)\Steam\steamapps\common\RUMBLE</LibsDirPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -73,40 +76,40 @@
 
 	<ItemGroup>
 	  <Reference Include="0Harmony">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\0Harmony.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\net6\0Harmony.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Il2CppInterop.Runtime">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Il2CppBucketheadEntertainment.Plugins">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\Il2CppBucketheadEntertainment.Plugins.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\Il2CppBucketheadEntertainment.Plugins.dll</HintPath>
 	  </Reference>  
 	  <Reference Include="Il2Cppmscorlib">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Il2CppRUMBLE.Runtime">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\Il2CppRUMBLE.Runtime.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\Il2CppRUMBLE.Runtime.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MelonLoader">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\MelonLoader.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\net6\MelonLoader.dll</HintPath>
 	  </Reference>
 	  <Reference Include="RumbleModdingAPI">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\Mods\RumbleModdingAPI.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\Mods\RumbleModdingAPI.dll</HintPath>
 	  </Reference>
 	  <Reference Include="Unity.TextMeshPro">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\Unity.TextMeshPro.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\Unity.TextMeshPro.dll</HintPath>
 	  </Reference>
 	  <Reference Include="UnityEngine.CoreModule">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
 	  </Reference>
 	  <Reference Include="UnityEngine.Il2CppAssetBundleManager">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\UnityEngine.Il2CppAssetBundleManager.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\net6\UnityEngine.Il2CppAssetBundleManager.dll</HintPath>
 	  </Reference>
 	  <Reference Include="UnityEngine.TextRenderingModule">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath>
 	  </Reference>
 	  <Reference Include="UnityEngine.UI">
-	    <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\Il2CppAssemblies\UnityEngine.UI.dll</HintPath>
+	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.UI.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

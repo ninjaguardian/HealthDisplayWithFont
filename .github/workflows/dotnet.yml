@@ -1,0 +1,89 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    env:
+      LIBSDIRPATH: ${{ github.workspace }}/deps
+        
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Download dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          for dep in $(jq -r '.dependencies[]' manifest.json); do
+            # split "USER-PACKAGE-VER" into components
+            IFS='-' read -r user pkg ver <<< "$dep"
+            url="https://thunderstore.io/package/download/${user}/${pkg}/${ver}/"
+            out="deps/${user}-${pkg}-${ver}.zip"
+            echo "Fetching $url → $out"
+            wget -O "$out" "$url"
+          done
+      - name: Download dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $deps = (Get-Content manifest.json | ConvertFrom-Json).dependencies
+          New-Item -ItemType Directory -Force -Path deps | Out-Null
+          foreach ($dep in $deps) {
+            $parts = $dep -split '-'
+            $user = $parts[0]; $pkg = $parts[1]; $ver = $parts[2]
+            $url = "https://thunderstore.io/package/download/$user/$pkg/$ver"
+            $out = "deps\$($user)-$($pkg)-$($ver).zip"
+            Write-Host "Fetching $url → $out"
+            Invoke-WebRequest -Uri $url -OutFile $out
+          }
+
+      - name: Unzip dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          for zip in deps/*.zip; do
+            echo "Extracting $zip"
+            unzip -n "$zip" -d deps
+          done
+      - name: Unzip dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Get-ChildItem deps\*.zip | ForEach-Object {
+            $zip = $_.FullName
+            Write-Host "Extracting $zip"
+            Expand-Archive -Path $zip -DestinationPath deps -Force
+          }
+
+      - name: Clean files in deps (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: find deps/ -maxdepth 1 -type f -delete
+      - name: Clean files in deps (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: Get-ChildItem -Path "deps" -File | Remove-Item -Force
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+        
+      - name: Build
+        run: dotnet build --configuration Release /p:LIBSDIRPATH="$LIBSDIRPATH"
+      
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH="$LIBSDIRPATH"
