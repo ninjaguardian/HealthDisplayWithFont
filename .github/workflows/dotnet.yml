@@ -112,17 +112,17 @@ jobs:
       - name: Install Cpp2IL (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          wget -qO cpp2il.zip https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
-          mkdir cpp2il && unzip cpp2il.zip -d cpp2il && chmod +x cpp2il/Cpp2IL
+          wget -qO cpp2il https://github.com/SamboyCoding/Cpp2IL/releases/download/${{ env.Cpp2ILVer }}/Cpp2IL-${{ env.Cpp2ILVer }}-Linux
+          chmod +x cpp2il
           
       - name: Run Cpp2IL (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           mkdir -p deps/Il2CppAssemblies
-          cpp2il/Cpp2IL \
+          cpp2il \
             --game-path game_files \
             --just-give-me-dlls-asap-dammit \
-            --output-dir deps/Il2CppAssemblies
+            --output-dir deps/MelonLoader/Il2CppAssemblies
 
       - name: Clean files in deps (Linux)
         if: matrix.os == 'ubuntu-latest'
