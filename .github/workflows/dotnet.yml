@@ -58,7 +58,7 @@ jobs:
 
       - name: Install RUMBLE
         shell: cmd
-        run: steamcmd +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +force_install_dir ./deps/ +app_update 890550 validate +quit
+        run: steamcmd +force_install_dir ./deps/ +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +app_update 890550 validate +quit
 
       - name: test
         shell: cmd
