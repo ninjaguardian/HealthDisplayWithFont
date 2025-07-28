@@ -29,6 +29,7 @@ jobs:
       - name: Download dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
+          mkdir -p deps
           for dep in $(jq -r '.dependencies[]' manifest.json); do
             # split "USER-PACKAGE-VER" into components
             IFS='-' read -r user pkg ver <<< "$dep"
