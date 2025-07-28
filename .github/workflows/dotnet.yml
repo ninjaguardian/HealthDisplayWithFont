@@ -18,7 +18,7 @@ jobs:
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}/deps
-      DepotDownloaderVer: latest
+      DepotDownloaderVer: DepotDownloader_3.4.0
       Cpp2ILVer: 2022.1.0-pre-release.19
         
     steps:
@@ -75,10 +75,10 @@ jobs:
       - name: Install DepotDownloader (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          wget -qO depotdl.tar.gz \
+          wget -qO depotdl.zip \
             https://github.com/SteamRE/DepotDownloader/releases/download/${{ env.DepotDownloaderVer }}/DepotDownloader-linux-x64.zip
           mkdir depotdl
-          unzip depotdl.tar.gz -d depotdl
+          unzip depotdl.zip -d depotdl
           chmod +x depotdl/DepotDownloader
       - name: Install DepotDownloader (Windows)
         if: matrix.os == 'windows-latest'
