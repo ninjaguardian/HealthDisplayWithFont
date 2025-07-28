@@ -11,7 +11,7 @@ using System.Collections;
 // Test with clones
 // The issue only occurs after the playerhealth is initlizied
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "1.0.0", "ninjaguardian")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.0", "ninjaguardian")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
@@ -109,36 +109,36 @@ namespace HealthDisplayWithFont
             return null;
         }
 
-        [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        class PlayerHealthInitPatch
-        {
-            static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
-            {
-                MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
+        //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
+        //class PlayerHealthInitPatch
+        //{
+        //    static void Postfix(ref PlayerHealth __instance, ref PlayerController controller)
+        //    {
+        //        MelonLogger.Warning(controller.assignedPlayer.Data.GeneralData.PublicUsername);
 
-                if (controller.controllerType == ControllerType.Local)
-                {
-                    bool foundYet = false;
-                    foreach (GameObject obj in Object.FindObjectsOfType<GameObject>()) // Removes clones
-                    {
-                        if (obj.name == "Player Controller(Clone)")
-                        {
-                            if (foundYet)
-                                return;
-                            foundYet = true;
-                        }
-                    }
-                }
+        //        if (controller.controllerType == ControllerType.Local)
+        //        {
+        //            bool foundYet = false;
+        //            foreach (GameObject obj in Object.FindObjectsOfType<GameObject>()) // Removes clones
+        //            {
+        //                if (obj.name == "Player Controller(Clone)")
+        //                {
+        //                    if (foundYet)
+        //                        return;
+        //                    foundYet = true;
+        //                }
+        //            }
+        //        }
 
-                MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
+        //        MelonLogger.Warning("Pass " + (controller.controllerType == ControllerType.Local));
 
 
-                if (controller.controllerType == ControllerType.Local)
-                {
-                    MelonLogger.Warning("BLAH");
-                }
-            }
-        }
+        //        if (controller.controllerType == ControllerType.Local)
+        //        {
+        //            MelonLogger.Warning("BLAH");
+        //        }
+        //    }
+        //}
 
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
         class HealthBarPercentagePatch
@@ -156,11 +156,11 @@ namespace HealthDisplayWithFont
         {
             if (localHealthBar != null)
             {
-                localHealthBar.GetComponent<TextMeshPro>().text = Calls.Players.GetLocalPlayer().Data.HealthPoints.ToString();
+                localHealthBar.GetComponent<TextMeshPro>().text = Calls.Players.GetLocalPlayer().Data.HealthPoints.ToString(); // Can I just use currentHealth?
             }
             else
             {
-                MelonLogger.Error("Local health bar detected as null");
+                MelonLogger.Error("Local health bar detected as null. Attempting to fix.");
                 MapInit();
             }
         }
