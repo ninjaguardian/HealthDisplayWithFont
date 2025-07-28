@@ -14,7 +14,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      LIBSDIRPATH: ${{ github.workspace }}/deps
+      LIBSDIRPATH: ${{ github.workspace }}\deps
         
     steps:
       - uses: actions/checkout@v4
@@ -92,17 +92,33 @@ jobs:
         shell: cmd
         run: steamcmd +force_install_dir .\deps\ +login ${{ secrets.STEAM_USERNAME }} +app_update 890550 validate +quit
 
-      - name: test
-        shell: cmd
-        run: ls -R deps\
+      - name: Run EXE until folder exists
+        shell: pwsh
+        run: |
+          $folderPath = "deps\MelonLoader\Il2CppAssemblies\"
+          $exePath = "deps\RUMBLE.exe"
 
-      # - name: Setup .NET SDK
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: '6.0.x'
+          $attempts = 0
+          while (-not (Test-Path $folderPath) -and $attempts -lt 10) {
+              & "deps\RUMBLE.exe"
+              Start-Sleep -Seconds 60
+              $attempts++
+          }
+
+          if (-not (Test-Path $folderPath)) {
+              Write-Error "Folder was not created after $attempts attempts"
+              exit 1
+          } else {
+            Start-Sleep -Seconds 10
+          }
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
         
-      # - name: Build
-      #   run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
+      - name: Build
+        run: dotnet build --configuration Release /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
       
-      # - name: Test
-      #   run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }} -p:PlatformTarget=x64
