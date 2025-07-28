@@ -84,13 +84,15 @@ jobs:
           $output = .\steamcmd.exe +login anonymous +app_info_print 890550 +quit
           $buildidLine = $output | Where-Object { $_ -match '"buildid"' }
           $buildid = $buildidLine -replace '.*"buildid"\s+"(\d+)".*', '$1'
-          echo "RUMBLEVER=$buildid" >> $GITHUB_ENV
+          echo "RUMBLEVER=$buildid" >> $env:GITHUB_ENV
+          echo "RUMBLEVER=$buildid"
 
       - name: Get MelonLoader version
         shell: pwsh
         run: |
           $melon_ver = ((Get-Content manifest.json | ConvertFrom-Json).dependencies | Where-Object { $_ -match 'MelonLoader' }) -replace '.*-',''
-          echo "MELONLOADERVER=$melon_ver" >> $GITHUB_ENV
+          echo "MELONLOADERVER=$melon_ver" >> $env:GITHUB_ENV
+          echo "MELONLOADERVER=$melon_ver"
 
       - name: Restore il2cpp cache
         id: cache-il2cpp
