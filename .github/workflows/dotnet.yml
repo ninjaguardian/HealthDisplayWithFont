@@ -77,13 +77,13 @@ jobs:
         id: cache
         uses: actions/cache/restore@v4
         with:
-          path: deps/Il2CppAssemblies
+          path: deps/MelonLoader/Il2CppAssemblies
           key: Il2CppAssemblies-${{ env.ManifestId }}
         
       - name: test
         if: matrix.os == 'ubuntu-latest'
         run: |
-          ls -R deps/Il2CppAssemblies
+          ls -R deps/MelonLoader/Il2CppAssemblies
 
       - name: Install DepotDownloader (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
@@ -134,16 +134,17 @@ jobs:
       - name: Run Cpp2IL (Linux)
         if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
         run: |
-          mkdir -p deps/Il2CppAssemblies
+          mkdir -p deps/MelonLoader/Il2CppAssemblies
           cpp2il \
             --game-path game_files \
             --output-to deps/MelonLoader/Il2CppAssemblies \
             --output-as dummydll
 
       - name: Save cache
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: deps/Il2CppAssemblies
+          path: deps/MelonLoader/Il2CppAssemblies
           key: Il2CppAssemblies-${{ env.ManifestId }}
 
       - name: Clean files in deps (Linux)
