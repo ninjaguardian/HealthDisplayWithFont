@@ -20,7 +20,7 @@ jobs:
       LIBSDIRPATH: ${{ github.workspace }}/deps
       DepotDownloaderVer: DepotDownloader_3.4.0
       Cpp2ILVer: 2022.1.0-pre-release.19
-      ManifestId: 1922173029348684036
+      ManifestId: "1922173029348684036"
         
     steps:
       - uses: actions/checkout@v4
