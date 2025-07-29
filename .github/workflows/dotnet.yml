@@ -29,13 +29,14 @@ jobs:
       - name: Get deps hash
         shell: pwsh
         run: |
-          $dependencies = (Get-Content manifest.json | ConvertFrom-Json).dependencies -join ";"
+          $dependencies = (Get-Content manifest.json | ConvertFrom-Json).dependencies -join "`n"
           $bytes = [System.Text.Encoding]::UTF8.GetBytes($dependencies)
           $memoryStream = [System.IO.MemoryStream]::new($bytes)
           $hash = Get-FileHash -InputStream $memoryStream -Algorithm SHA256
           $lowerhash = $hash.Hash.ToLower()
           echo "DEPSHASH=$lowerhash" >> $env:GITHUB_ENV
           echo "DEPSHASH=$lowerhash"
+          echo "Dependencies: $dependencies"
 
       - name: Restore Thunderstore deps cache
         if: ${{ env.DEPSHASH != '' }}
@@ -73,7 +74,12 @@ jobs:
       - name: Clean files in deps
         if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
-        run: Get-ChildItem -Path "deps" -File | Where-Object { $_.Name -ne "version.dll" } | Remove-Item -Force
+        run: |
+          $removedFiles = Get-ChildItem -Path "deps" -File | Where-Object { $_.Name -ne "version.dll" }
+          foreach ($file in $removedFiles) {
+            Write-Host "Removing file: $($file.FullName)"
+            Remove-Item -Path $file.FullName -Force
+          }
 
       - name: Save Thunderstore deps cache
         if: ${{ env.DEPSHASH != '' && steps.cache-deps.outputs.cache-hit != 'true' }}
