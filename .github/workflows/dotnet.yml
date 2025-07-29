@@ -252,11 +252,15 @@ jobs:
             exit 1
           }
 
-          $endIndex = ($lines[($startIndex + 1)..($lines.Length - 1)] | Select-String -Pattern "^# v" -List).LineNumber
-          if (-not $endIndex) {
+          $endIndex = -1
+          for ($j = $startIndex + 1; $j -lt $lines.Length; $j++) {
+            if ($lines[$j] -match "^# v") {
+              $endIndex = $j
+              break
+            }
+          }
+          if ($endIndex -eq -1) {
             $endIndex = $lines.Length
-          } else {
-            $endIndex = $startIndex + $endIndex
           }
 
           $changelogLines = $lines[($startIndex+1)..($endIndex-1)] | Where-Object { $_ -ne "" }
