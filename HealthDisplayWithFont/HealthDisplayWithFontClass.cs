@@ -7,6 +7,7 @@ using MelonLoader;
 using RumbleModdingAPI;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.LowLevel;
 
 // Test with clones
@@ -26,7 +27,7 @@ namespace HealthDisplayWithFont
     public class HealthDisplayWithFontClass : MelonMod
     {
         private static TMP_FontAsset fontAsset;
-        private static GameObject localHealthBar;
+        private static TextMeshPro localHealthBarText;
 
         /// <inheritdoc/>
         public override void OnLateInitializeMelon()
@@ -79,20 +80,19 @@ namespace HealthDisplayWithFont
         {
             const byte maxTimeout = 10; //max 255 seconds
             byte timeout = maxTimeout;
-            while (GameObject.Find("/Player Controller(Clone)") == null || GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar") == null || !(localHealthBar == null)) 
+            while (GetActiveLocalUIBar() == null || localHealthBarText != null) 
             {
                 yield return new WaitForSeconds(1);
                 if (--timeout == 0) {
                     MelonLogger.Error($"Timeout while waiting for local health bar game object. Waited {maxTimeout} seconds.");
-                    MelonLogger.Warning($"Is Player null: {GameObject.Find("/Player Controller(Clone)") == null} (expected: false)");
-                    MelonLogger.Warning($"Is UI Bar null: {GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar") == null} (expected: false)");
-                    MelonLogger.Warning($"Is localHealthBar null: {localHealthBar == null} (expected: true)");
+                    MelonLogger.Warning($"Is UI Bar null: {GetActiveLocalUIBar() == null} (expected: false)");
+                    MelonLogger.Warning($"Is Local UI Bar Text null: {localHealthBarText == null} (expected: true)");
                     yield break;
                 }
             }
 
             GameObject healthBar = new("TextMeshPro");
-            healthBar.transform.SetParent(GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar"), false);
+            healthBar.transform.SetParent(GetActiveLocalUIBar(), false);
 
             TextMeshPro textRef = healthBar.AddComponent<TextMeshPro>();
             healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0.1f);
@@ -105,7 +105,25 @@ namespace HealthDisplayWithFont
                 textRef.font = fontAsset;
             }
 
-            localHealthBar = healthBar;
+            localHealthBarText = textRef;
+        }
+
+        private static Transform GetActiveLocalUIBar()
+        {
+            var controllers = Object.FindObjectsOfType<PlayerController>();
+
+            for (int i = 0; i < controllers.Length; i++)
+            {
+                var controller = controllers[i];
+                if (controller.controllerType != ControllerType.Local)
+                    continue;
+
+                var bar = controller.transform.Find("UI/LocalUI/Local UI Bar");
+                if (bar != null && bar.gameObject.activeInHierarchy)
+                    return bar;
+            }
+
+            return null;
         }
 
         //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
@@ -142,24 +160,24 @@ namespace HealthDisplayWithFont
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
         class HealthBarPercentagePatch
         {
-            static void Postfix(ref PlayerHealth __instance, float currentHealth, float previousHealth, bool useEffects)
+            static void Postfix(ref PlayerHealth __instance, float currentHealth)
             {
                 if (__instance.parentController.controllerType == ControllerType.Local)
                 {
-                    OnLocalHealthChanged();
+                    OnLocalHealthChanged(currentHealth);
                 }
             }
         }
 
-        private static void OnLocalHealthChanged()
+        private static void OnLocalHealthChanged(float newHealth)
         {
-            if (localHealthBar != null)
+            if (localHealthBarText != null)
             {
-                localHealthBar.GetComponent<TextMeshPro>().text = Calls.Players.GetLocalPlayer().Data.HealthPoints.ToString(); // Can I just use currentHealth?
+                localHealthBarText.text = newHealth.ToString();
             }
             else
             {
-                MelonLogger.Error("Local health bar detected as null. Attempting to fix.");
+                MelonLogger.Error("Local UI Bar Text detected as null. Attempting to fix.");
                 MapInit();
             }
         }
