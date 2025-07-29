@@ -233,9 +233,38 @@ jobs:
         run: |
           Compress-Archive -Path artifact-download\* -DestinationPath ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
 
+      - name: Extract changelog for release
+        shell: pwsh
+        run: |
+          $version = "v${{ env.DLLVERSION }}"
+          $lines = Get-Content CHANGELOG.md
+
+          $startIndex = $lines.FindIndex({ $_ -match "^# $version" })
+
+          if ($startIndex -eq -1) {
+            Write-Error "Version $version not found in CHANGELOG.md"
+            exit 1
+          }
+
+          $endIndex = ($lines[$startIndex+1..($lines.Length-1)] | Select-String -Pattern "^# v" -List).LineNumber
+          if (-not $endIndex) {
+            $endIndex = $lines.Length
+          } else {
+            $endIndex = $startIndex + $endIndex
+          }
+
+          $changelogLines = $lines[($startIndex+1)..($endIndex-1)] | Where-Object { $_ -ne "" }
+
+          $body = $changelogLines -join "`n"
+
+          echo "body<<EOF" >> $env:GITHUB_ENV
+          echo $body >> $env:GITHUB_ENV
+          echo "EOF" >> $env:GITHUB_ENV
+
       - name: Create GitHub Release and upload artifact
         uses: softprops/action-gh-release@v2
         with:
           files: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+          body: ${{ env.body }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
