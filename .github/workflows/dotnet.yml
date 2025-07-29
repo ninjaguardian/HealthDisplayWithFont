@@ -226,8 +226,7 @@ jobs:
 
       - name: test
         run: |
-          ls ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-          ls ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+          ls -R
 
       # - name: Create GitHub Release and upload artifact
       #   uses: softprops/action-gh-release@v2
