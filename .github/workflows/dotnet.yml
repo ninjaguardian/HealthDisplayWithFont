@@ -177,11 +177,17 @@ jobs:
         with:
           dotnet-version: '6.0.x'
         
+      - name: Update & clean workloads
+        continue-on-error: true
+        run: |
+          dotnet workload update
+          dotnet workload clean
+
       - name: Build
         run: dotnet build --configuration Release /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
       
       - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet test --configuration Release --no-build --no-restore --verbosity normal /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
 
       - name: Get version number
         id: setversion
