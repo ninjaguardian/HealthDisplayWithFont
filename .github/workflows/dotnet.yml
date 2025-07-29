@@ -14,6 +14,9 @@ jobs:
   build:
     runs-on: windows-latest
 
+    outputs:
+      dllversion: ${{ steps.setversion.outputs.dllversion }}
+
     env:
       LIBSDIRPATH: ${{ github.workspace }}\deps
         
@@ -178,10 +181,12 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
 
       - name: Get version number
+        id: setversion
         shell: pwsh
         run: |
           $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
           echo "DLLVERSION=$version" >> $env:GITHUB_ENV
+          echo "dllversion=$version" >> $GITHUB_OUTPUT
           echo "DLLVERSION=$version"
 
       - name: Artifact setup
@@ -215,16 +220,16 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
+          name: ninjaguardian-HealthDisplayWithFont-${{ needs.build.outputs.dllversion }}
 
       - name: test
         run: |
-          ls ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-          ls ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+          ls ninjaguardian-HealthDisplayWithFont-${{ needs.build.outputs.dllversion }}
+          ls ninjaguardian-HealthDisplayWithFont-${{ needs.build.outputs.dllversion }}.zip
 
       # - name: Create GitHub Release and upload artifact
       #   uses: softprops/action-gh-release@v2
       #   with:
-      #     files: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+      #     files: ninjaguardian-HealthDisplayWithFont-${{ needs.build.outputs.dllversion }}.zip
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
