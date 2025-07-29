@@ -170,5 +170,16 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
 
-      - name: Check
-        run: ls bin\x64\Release\net6.0-windows
+      - name: Get version number
+        shell: pwsh
+        run: |
+          $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
+          echo "DLLVERSION=$version" >> $env:GITHUB_ENV
+          echo "DLLVERSION=$version"
+
+      - name: Upload build artifact
+        if: ${{ env.DLLVERSION != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+         name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
+         path: HealthDisplayWithFont\bin\Release\net6.0-windows\HealthDisplayWithFont.dll
