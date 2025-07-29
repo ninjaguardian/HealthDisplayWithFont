@@ -88,8 +88,13 @@ jobs:
       - name: Install steamcmd
         shell: pwsh
         run: |
-          .\steamcmd.exe +quit || $global:LASTEXITCODE = ($LASTEXITCODE -eq 7 ? 0 : $LASTEXITCODE)
-          exit $LASTEXITCODE
+          .\steamcmd.exe +quit
+          $code = $LASTEXITCODE
+          if ($code -eq 7) {
+              Write-Output "SteamCMD returned exit code 7 (ignoring)."
+              $code = 0
+          }
+          exit $code
 
       - name: Get RUMBLE version
         shell: pwsh
