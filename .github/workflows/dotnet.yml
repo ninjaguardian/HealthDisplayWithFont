@@ -239,14 +239,20 @@ jobs:
           $version = "v${{ env.DLLVERSION }}"
           $lines = Get-Content CHANGELOG.md
 
-          $startIndex = $lines.FindIndex({ $_ -match "^# $version" })
+          $startIndex = -1
+          for ($i = 0; $i -lt $lines.Length; $i++) {
+              if ($lines[$i] -match "^# $version") {
+                  $startIndex = $i
+                  break
+              }
+          }
 
           if ($startIndex -eq -1) {
             Write-Error "Version $version not found in CHANGELOG.md"
             exit 1
           }
 
-          $endIndex = ($lines[$startIndex+1..($lines.Length-1)] | Select-String -Pattern "^# v" -List).LineNumber
+          $endIndex = ($lines[($startIndex + 1)..($lines.Length - 1)] | Select-String -Pattern "^# v" -List).LineNumber
           if (-not $endIndex) {
             $endIndex = $lines.Length
           } else {
