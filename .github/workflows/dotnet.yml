@@ -183,9 +183,23 @@ jobs:
           echo "DLLVERSION=$version" >> $env:GITHUB_ENV
           echo "DLLVERSION=$version"
 
+      - name: Artifact setup
+        if: ${{ env.DLLVERSION != '' }}
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\Mods | Out-Null
+          Move-Item -Path HealthDisplayWithFont\bin\Release\net6.0-windows\HealthDisplayWithFont.dll -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\Mods
+          New-Item -ItemType Directory -Force -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\UserData\HealthDisplayWithFont | Out-Null
+          Invoke-WebRequest -Uri https://drive.google.com/uc?id=10koiaqNuqS5EzcA5TqMzhGA8Gl1thTNz -OutFile HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\UserData\HealthDisplayWithFont\font.otf
+          Copy-Item -Path CHANGELOG.md -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          Copy-Item -Path README.md -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          Copy-Item -Path icon.png -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          Copy-Item -Path LICENSE.txt -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          Copy-Item -Path manifest.json -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
          name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-         path: HealthDisplayWithFont\bin\Release\net6.0-windows\HealthDisplayWithFont.dll
+         path: HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
