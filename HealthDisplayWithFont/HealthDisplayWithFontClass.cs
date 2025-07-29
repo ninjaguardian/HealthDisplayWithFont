@@ -1,17 +1,18 @@
-﻿using Il2CppTMPro;
-using HarmonyLib;
+﻿using HarmonyLib;
+using HealthDisplayWithFont;
+using Il2CppRUMBLE.Players;
+using Il2CppRUMBLE.Players.Subsystems;
+using Il2CppTMPro;
 using MelonLoader;
 using RumbleModdingAPI;
-using UnityEngine;
-using Il2CppRUMBLE.Players.Subsystems;
-using Il2CppRUMBLE.Players;
-using HealthDisplayWithFont;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.TextCore.LowLevel;
 
 // Test with clones
 // The issue only occurs after the playerhealth is initlizied
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.0", "ninjaguardian")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.1", "ninjaguardian")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
@@ -34,11 +35,32 @@ namespace HealthDisplayWithFont
             {
                 string[] fontPaths = new string[]
                 {
-                        "font.ttf",
-                        "font.otf"
+                    "font.ttf",
+                    "font.otf"
                 };
 
-                fontAsset = LoadFont(fontPaths);
+                foreach (string fontName in fontPaths)
+                {
+                    try
+                    {
+                        var loadedFont = TMP_FontAsset.CreateFontAsset(
+                            $@"UserData\HealthDisplayWithFont\{fontName}",
+                            0,
+                            90,
+                            5,
+                            GlyphRenderMode.SDFAA,
+                            1024,
+                            1024
+                        );
+                        loadedFont.hideFlags = HideFlags.HideAndDontSave;
+                        fontAsset = loadedFont;
+                        break;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
             }
             catch (System.Exception ex)
             {
@@ -57,20 +79,20 @@ namespace HealthDisplayWithFont
         {
             const byte maxTimeout = 10; //max 255 seconds
             byte timeout = maxTimeout;
-            while (GameObject.Find("/Health") == null || GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null || !(localHealthBar == null)) 
+            while (GameObject.Find("/Player Controller(Clone)") == null || GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar") == null || !(localHealthBar == null)) 
             {
                 yield return new WaitForSeconds(1);
                 if (--timeout == 0) {
                     MelonLogger.Error($"Timeout while waiting for local health bar game object. Waited {maxTimeout} seconds.");
-                    MelonLogger.Warning($"Is Health null: {GameObject.Find("/Health") == null} (expected: false)");
-                    MelonLogger.Warning($"Is Healthbar null: {GameObject.Find("/Health").transform.GetChild(1).GetChild(0) == null} (expected: false)");
+                    MelonLogger.Warning($"Is Player null: {GameObject.Find("/Player Controller(Clone)") == null} (expected: false)");
+                    MelonLogger.Warning($"Is UI Bar null: {GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar") == null} (expected: false)");
                     MelonLogger.Warning($"Is localHealthBar null: {localHealthBar == null} (expected: true)");
                     yield break;
                 }
             }
 
             GameObject healthBar = new("TextMeshPro");
-            healthBar.transform.SetParent(GameObject.Find("/Health").transform.GetChild(1).GetChild(0), false);
+            healthBar.transform.SetParent(GameObject.Find("/Player Controller(Clone)").transform.Find("UI").Find("LocalUI").Find("Local UI Bar"), false);
 
             TextMeshPro textRef = healthBar.AddComponent<TextMeshPro>();
             healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0.1f);
@@ -84,29 +106,6 @@ namespace HealthDisplayWithFont
             }
 
             localHealthBar = healthBar;
-        }
-
-        private static TMP_FontAsset LoadFont(string[] fontNames)
-        {
-            Il2CppAssetBundle bundle = Il2CppAssetBundleManager.LoadFromFile(@"UserData\HealthDisplayWithFont\fontbundle");
-            foreach (string fontName in fontNames)
-            {
-                try
-                {
-                    Font loadedFont = Object.Instantiate(bundle.LoadAsset<Font>(fontName));
-                    if (loadedFont != null)
-                    {
-                        TMP_FontAsset myFont = TMP_FontAsset.CreateFontAsset(loadedFont);
-                        myFont.hideFlags = HideFlags.HideAndDontSave;
-                        return myFont;
-                    }
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-            return null;
         }
 
         //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
