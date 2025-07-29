@@ -7,7 +7,6 @@ using MelonLoader;
 using RumbleModdingAPI;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.LowLevel;
 
 // Test with clones
@@ -80,19 +79,20 @@ namespace HealthDisplayWithFont
         {
             const byte maxTimeout = 10; //max 255 seconds
             byte timeout = maxTimeout;
-            while (GetActiveLocalUIBar() == null || localHealthBarText != null) 
+            while (Calls.Players.GetPlayerController().transform.Find("UI/LocalUI/Local UI Bar") == null || localHealthBarText != null) 
             {
                 yield return new WaitForSeconds(1);
                 if (--timeout == 0) {
                     MelonLogger.Error($"Timeout while waiting for local health bar game object. Waited {maxTimeout} seconds.");
-                    MelonLogger.Warning($"Is UI Bar null: {GetActiveLocalUIBar() == null} (expected: false)");
+                    MelonLogger.Warning($"Is PlayerController null: {Calls.Players.GetPlayerController() == null} (expected: false)");
+                    MelonLogger.Warning($"Is UI Bar null: {Calls.Players.GetPlayerController().transform.Find("UI/LocalUI/Local UI Bar") == null} (expected: false)");
                     MelonLogger.Warning($"Is Local UI Bar Text null: {localHealthBarText == null} (expected: true)");
                     yield break;
                 }
             }
 
             GameObject healthBar = new("TextMeshPro");
-            healthBar.transform.SetParent(GetActiveLocalUIBar(), false);
+            healthBar.transform.SetParent(Calls.Players.GetPlayerController().transform.Find("UI/LocalUI/Local UI Bar"), false);
 
             TextMeshPro textRef = healthBar.AddComponent<TextMeshPro>();
             healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0.1f);
@@ -106,24 +106,6 @@ namespace HealthDisplayWithFont
             }
 
             localHealthBarText = textRef;
-        }
-
-        private static Transform GetActiveLocalUIBar()
-        {
-            var controllers = Object.FindObjectsOfType<PlayerController>();
-
-            for (int i = 0; i < controllers.Length; i++)
-            {
-                var controller = controllers[i];
-                if (controller.controllerType != ControllerType.Local)
-                    continue;
-
-                var bar = controller.transform.Find("UI/LocalUI/Local UI Bar");
-                if (bar != null && bar.gameObject.activeInHierarchy)
-                    return bar;
-            }
-
-            return null;
         }
 
         //[HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
@@ -162,7 +144,7 @@ namespace HealthDisplayWithFont
         {
             static void Postfix(ref PlayerHealth __instance, float currentHealth)
             {
-                if (__instance.parentController.controllerType == ControllerType.Local)
+                if (__instance?.parentController?.controllerType == ControllerType.Local)
                 {
                     OnLocalHealthChanged(currentHealth);
                 }
