@@ -12,7 +12,7 @@ using UnityEngine.TextCore.LowLevel;
 // Test with clones
 // The issue only occurs after the playerhealth is initlizied
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.1", "ninjaguardian")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.2", "ninjaguardian")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
