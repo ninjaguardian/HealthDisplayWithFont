@@ -202,14 +202,13 @@ jobs:
           Copy-Item -Path icon.png -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path LICENSE.txt -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path manifest.json -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          Compress-Archive -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup -DestinationPath HealthDisplayWithFont\bin\Release\net6.0-windows\ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
 
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
          name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-         path: HealthDisplayWithFont\bin\Release\net6.0-windows\ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+         path: HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
 
   release:
     needs: build
@@ -224,14 +223,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
+          path: artifact-download
 
-      - name: test
+      - name: Zip artifact
+        shell: pwsh
         run: |
-          ls -R
+          Compress-Archive -Path artifact-download\* -DestinationPath ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
 
-      # - name: Create GitHub Release and upload artifact
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     files: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release and upload artifact
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
