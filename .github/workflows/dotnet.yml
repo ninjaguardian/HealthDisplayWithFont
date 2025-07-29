@@ -14,6 +14,9 @@ jobs:
   build:
     runs-on: windows-latest
 
+    outputs:
+      dllversion: ${{ steps.setversion.outputs.dllversion }}
+
     env:
       LIBSDIRPATH: ${{ github.workspace }}\deps
         
@@ -178,10 +181,12 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
 
       - name: Get version number
+        id: setversion
         shell: pwsh
         run: |
           $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
           echo "DLLVERSION=$version" >> $env:GITHUB_ENV
+          echo "dllversion=$version" >> "$GITHUB_OUTPUT"
           echo "DLLVERSION=$version"
 
       - name: Artifact setup
@@ -208,16 +213,11 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      DLLVERSION: ${{ needs.build.outputs.dllversion }}
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
-
-      - name: Get version number
-        shell: pwsh
-        run: |
-          $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
-          echo "DLLVERSION=$version" >> $env:GITHUB_ENV
-          echo "DLLVERSION=$version"
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
