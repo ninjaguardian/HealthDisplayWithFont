@@ -86,9 +86,16 @@ jobs:
           Expand-Archive -Path $steamcmdZip -DestinationPath . -Force
 
       - name: Install steamcmd
-        shell: cmd
-        run: steamcmd +quit
-        continue-on-error: true
+        shell: pwsh
+        run: |
+          .\steamcmd +quit
+          EXIT=$?
+          if [ $EXIT -ne 0 ] && [ $EXIT -ne 7 ]; then
+            echo "Unexpected SteamCMD exit code: $EXIT"
+            exit $EXIT
+          else
+            echo "SteamCMD exited with code $EXIT (ignored)"
+          fi
 
       - name: Get RUMBLE version
         shell: pwsh
