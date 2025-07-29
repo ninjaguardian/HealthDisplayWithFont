@@ -180,6 +180,7 @@ jobs:
       - name: Update & clean workloads
         continue-on-error: true
         run: |
+          dotnet workload list
           dotnet workload update
           dotnet workload clean
 
@@ -211,6 +212,7 @@ jobs:
           Copy-Item -Path icon.png -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path LICENSE.txt -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path manifest.json -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          ls -R HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
 
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
@@ -276,6 +278,7 @@ jobs:
           echo "body<<EOF" >> $env:GITHUB_ENV
           echo $body >> $env:GITHUB_ENV
           echo "EOF" >> $env:GITHUB_ENV
+          echo "$body"
 
       - name: Create GitHub Release and upload artifact
         uses: softprops/action-gh-release@v2
