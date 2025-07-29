@@ -34,9 +34,9 @@ jobs:
           $memoryStream = [System.IO.MemoryStream]::new($bytes)
           $hash = Get-FileHash -InputStream $memoryStream -Algorithm SHA256
           $lowerhash = $hash.Hash.ToLower()
-          echo "DEPSHASH=$lowerhash" >> $env:GITHUB_ENV
-          echo "DEPSHASH=$lowerhash"
-          echo "Dependencies: $dependencies"
+          Write-Output "DEPSHASH=$lowerhash" >> $env:GITHUB_ENV
+          Write-Host "DEPSHASH=$lowerhash"
+          Write-Host "Dependencies:`n$dependencies"
 
       - name: Restore Thunderstore deps cache
         if: ${{ env.DEPSHASH != '' }}
@@ -104,8 +104,8 @@ jobs:
           .\steamcmd.exe +quit
           $code = $LASTEXITCODE
           if ($code -eq 7) {
-              Write-Output "SteamCMD returned exit code 7 (ignoring)."
-              $code = 0
+            Write-Host "SteamCMD returned exit code 7 (ignoring)."
+            $code = 0
           }
           exit $code
 
@@ -115,15 +115,19 @@ jobs:
           $output = .\steamcmd.exe +login anonymous +app_info_print 890550 +quit
           $buildidLine = $output | Where-Object { $_ -match '"buildid"' }
           $buildid = $buildidLine -replace '.*"buildid"\s+"(\d+)".*', '$1'
-          echo "RUMBLEVER=$buildid" >> $env:GITHUB_ENV
-          echo "RUMBLEVER=$buildid"
+          Write-Output "RUMBLEVER=$buildid" >> $env:GITHUB_ENV
+          Write-Host "RUMBLEVER=$buildid"
+          if (-not $buildid) {
+            Write-Error "Failed to retrieve RUMBLE version."
+            Write-Host "Output from steamcmd:`n$output"
+          }
 
       - name: Get MelonLoader version
         shell: pwsh
         run: |
           $melon_ver = ((Get-Content manifest.json | ConvertFrom-Json).dependencies | Where-Object { $_ -match 'MelonLoader' }) -replace '.*-',''
-          echo "MELONLOADERVER=$melon_ver" >> $env:GITHUB_ENV
-          echo "MELONLOADERVER=$melon_ver"
+          Write-Output "MELONLOADERVER=$melon_ver" >> $env:GITHUB_ENV
+          Write-Host "MELONLOADERVER=$melon_ver"
 
       - name: Restore il2cpp cache
         id: cache-il2cpp
@@ -201,9 +205,9 @@ jobs:
         shell: pwsh
         run: |
           $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
-          echo "DLLVERSION=$version" >> $env:GITHUB_ENV
-          echo "dllversion=$version" >> $env:GITHUB_OUTPUT
-          echo "DLLVERSION=$version"
+          Write-Output "DLLVERSION=$version" >> $env:GITHUB_ENV
+          Write-Output "dllversion=$version" >> $env:GITHUB_OUTPUT
+          Write-Host "DLLVERSION=$version"
 
       - name: Artifact setup
         if: ${{ env.DLLVERSION != '' }}
@@ -255,10 +259,10 @@ jobs:
 
           $startIndex = -1
           for ($i = 0; $i -lt $lines.Length; $i++) {
-              if ($lines[$i] -match "^# $version") {
-                  $startIndex = $i
-                  break
-              }
+            if ($lines[$i] -match "^# $version") {
+              $startIndex = $i
+              break
+            }
           }
 
           if ($startIndex -eq -1) {
@@ -281,10 +285,10 @@ jobs:
 
           $body = $changelogLines -join "`n"
 
-          echo "body<<EOF" >> $env:GITHUB_ENV
-          echo $body >> $env:GITHUB_ENV
-          echo "EOF" >> $env:GITHUB_ENV
-          echo "$body"
+          Write-Output "body<<EOF" >> $env:GITHUB_ENV
+          Write-Output $body >> $env:GITHUB_ENV
+          Write-Output "EOF" >> $env:GITHUB_ENV
+          Write-Host "$body"
 
       - name: Create GitHub Release and upload artifact
         uses: softprops/action-gh-release@v2
