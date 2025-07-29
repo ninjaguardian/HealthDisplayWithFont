@@ -202,13 +202,14 @@ jobs:
           Copy-Item -Path icon.png -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path LICENSE.txt -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
           Copy-Item -Path manifest.json -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          Compress-Archive -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup -DestinationPath HealthDisplayWithFont\bin\Release\net6.0-windows\ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
 
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
          name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-         path: HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+         path: HealthDisplayWithFont\bin\Release\net6.0-windows\ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}.zip
 
   release:
     needs: build
