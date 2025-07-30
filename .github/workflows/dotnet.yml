@@ -187,12 +187,12 @@ jobs:
         with:
           dotnet-version: '6.0.x'
         
-      - name: Update & clean workloads
-        continue-on-error: true
-        run: |
-          dotnet workload list
-          dotnet workload update
-          dotnet workload clean
+      # - name: Update & clean workloads (Only run if needed)
+      #   continue-on-error: true
+      #   run: |
+      #     dotnet workload list
+      #     dotnet workload update
+      #     dotnet workload clean
 
       - name: Build
         run: dotnet build --configuration Release /p:PlatformTarget=x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}

@@ -5,6 +5,6 @@
     "description": "This mod adds a number above your health bar that shows your HP in a custom font.",
     "dependencies": [
         "LavaGang-MelonLoader-0.7.0",
-        "UlvakSkillz-RumbleModdingAPI-3.3.7"
+        "UlvakSkillz-RumbleModdingAPI-3.4.1"
     ]
 }
