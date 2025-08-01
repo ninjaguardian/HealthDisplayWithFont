@@ -213,23 +213,26 @@ jobs:
         if: ${{ env.DLLVERSION != '' }}
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\Mods | Out-Null
-          Move-Item -Path HealthDisplayWithFont\bin\Release\net6.0-windows\HealthDisplayWithFont.dll -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\Mods
-          New-Item -ItemType Directory -Force -Path HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\UserData\HealthDisplayWithFont | Out-Null
-          Invoke-WebRequest -Uri https://drive.google.com/uc?id=10koiaqNuqS5EzcA5TqMzhGA8Gl1thTNz -OutFile HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup\UserData\HealthDisplayWithFont\font.otf
-          Copy-Item -Path CHANGELOG.md -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          Copy-Item -Path README.md -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          Copy-Item -Path icon.png -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          Copy-Item -Path LICENSE.txt -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          Copy-Item -Path manifest.json -Destination HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
-          ls -R HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+          $binPath = "HealthDisplayWithFont\bin\Release\net6.0-windows\win-x64\"
+          New-Item -ItemType Directory -Force -Path $binPath\artifactsetup\Mods | Out-Null
+          Move-Item -Path $binPath\HealthDisplayWithFont.dll -Destination $binPath\artifactsetup\Mods
+          New-Item -ItemType Directory -Force -Path $binPath\artifactsetup\UserData\HealthDisplayWithFont | Out-Null
+          #Download CRUMBLE font
+          Invoke-WebRequest -Uri https://drive.google.com/uc?id=10koiaqNuqS5EzcA5TqMzhGA8Gl1thTNz -OutFile $binPath\artifactsetup\UserData\HealthDisplayWithFont\font.otf
+          Copy-Item -Path CHANGELOG.md -Destination $binPath\artifactsetup
+          Copy-Item -Path README.md -Destination $binPath\artifactsetup
+          Copy-Item -Path icon.png -Destination $binPath\artifactsetup
+          Copy-Item -Path LICENSE.txt -Destination $binPath\artifactsetup
+          Copy-Item -Path manifest.json -Destination $binPath\artifactsetup
+          Write-Output "BINPATH=$binPath" >> $env:GITHUB_ENV
+          ls -R $binPath\artifactsetup
 
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
         uses: actions/upload-artifact@v4
         with:
          name: ninjaguardian-HealthDisplayWithFont-${{ env.DLLVERSION }}
-         path: HealthDisplayWithFont\bin\Release\net6.0-windows\artifactsetup
+         path: ${{ env.BINPATH }}\artifactsetup
 
   release:
     needs: build
