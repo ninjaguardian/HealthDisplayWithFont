@@ -144,7 +144,7 @@ namespace HealthDisplayWithFont
         {
             static void Postfix(ref PlayerHealth __instance, float currentHealth)
             {
-                if (__instance?.parentController?.controllerType == ControllerType.Local)
+                if (__instance.parentController?.controllerType == ControllerType.Local)
                 {
                     OnLocalHealthChanged(currentHealth);
                 }
