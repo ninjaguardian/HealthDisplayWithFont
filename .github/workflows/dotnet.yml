@@ -195,7 +195,7 @@ jobs:
       #     dotnet workload clean
 
       - name: Build
-        run: dotnet build --configuration Release --runtime win-x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
+        run: dotnet publish --configuration Release --no-self-contained --runtime win-x64 /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
       
       - name: Test
         run: dotnet test --configuration Release --runtime win-x64 --no-build --no-restore --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
