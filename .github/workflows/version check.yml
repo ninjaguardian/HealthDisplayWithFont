@@ -1,0 +1,25 @@
+name: Version Check
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        shell: bash
+        run: |
+          version_number=$(jq -r '.version_number' manifest.json)
+          echo "VERSIONNUM=$version_number" >> $GITHUB_ENV
+          echo "Version number is $version_number"
+
+      - name: Check .csproj
+        shell: bash
+        run: |
+          version_number=$(sed -nE 's/.*<VersionPrefix>([^<]+)<\/VersionPrefix>.*/\1/p' obj/HealthDisplayWithFont.csproj)
+          if [ "$version_number" != "$VERSIONNUM" ]; then
+            echo "Error: got version $version_number, expected $VERSIONNUM"
+            exit 1
+          fi
