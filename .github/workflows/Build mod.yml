@@ -35,7 +35,7 @@ jobs:
       - name: Check .cs
         shell: bash
         run: |
-          version_number=$(awk -F'"' '/MelonInfo/ {print $4; exit}' HealthDisplayWithFont/HealthDisplayWithFont.cs)
+          version_number=$(awk -F'"' '/MelonInfo/ {print $4; exit}' HealthDisplayWithFont/HealthDisplayWithFontClass.cs)
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
             exit 1
@@ -306,7 +306,7 @@ jobs:
          path: ${{ env.BINPATH }}\artifactsetup
 
   release:
-    needs: build
+    needs: [build, check]
     runs-on: ubuntu-latest
     env:
       DLLVERSION: ${{ needs.build.outputs.dllversion }}
