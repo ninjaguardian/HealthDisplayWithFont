@@ -249,7 +249,7 @@ jobs:
         if: ${{ env.DLLVERSION != '' }}
         shell: pwsh
         run: |
-          $binPath = "HealthDisplayWithFont\bin\x64\Release\net6.0-windows\win-x64\"
+          $binPath = "HealthDisplayWithFont\bin\x64\Release\net6.0-windows10.0.17763.0\win-x64\"
           New-Item -ItemType Directory -Force -Path $binPath\artifactsetup\Mods | Out-Null
           Move-Item -Path $binPath\HealthDisplayWithFont.dll -Destination $binPath\artifactsetup\Mods
           New-Item -ItemType Directory -Force -Path $binPath\artifactsetup\UserData\HealthDisplayWithFont | Out-Null
