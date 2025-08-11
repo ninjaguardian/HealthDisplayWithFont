@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using HealthDisplayWithFont;
+using Il2CppRUMBLE.Managers;
 using Il2CppRUMBLE.Players;
 using Il2CppRUMBLE.Players.Subsystems;
 using Il2CppTMPro;
@@ -69,18 +70,28 @@ namespace HealthDisplayWithFont
             }
         }
 
-        private static void AddHealthbarText(Transform UIBAR, Player player)
+        private static void AddHealthbarText(Transform UIBAR, Player player, ControllerType controllerType)
         {
+            if (UIBAR == null) return;
             GameObject healthBar = new("HealthText");
             healthBar.transform.SetParent(UIBAR, false);
 
             TextMeshPro textRef = healthBar.AddComponent<TextMeshPro>();
-
-            healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0.1f);
-            healthBar.transform.localRotation = Quaternion.Euler(63f, 270f, 0f);
-            healthBar.transform.localScale = new Vector3(0.015f, 0.007f, 0.015f);
+            if (controllerType == ControllerType.Local)
+            {
+                healthBar.transform.localPosition = new Vector3(-1.01f, 0.01f, 0f);
+                healthBar.transform.localRotation = Quaternion.Euler(63f, 270f, 0f);
+                healthBar.transform.localScale = new Vector3(0.015f, 0.007f, 0.015f);
+            }
+            else
+            {
+                healthBar.transform.localPosition = new Vector3(0f, 0.25f, 0f);
+                healthBar.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                healthBar.transform.localScale = new Vector3(-0.1f, 0.1f, 0.1f);
+            }
 
             textRef.text = player.Data.HealthPoints.ToString();
+            textRef.alignment = TextAlignmentOptions.Center;
 
             if (fontAsset != null)
             {
@@ -108,14 +119,14 @@ namespace HealthDisplayWithFont
             }
             else if (controllerType == ControllerType.Remote)
             {
-                Transform healthbar = UI.GetChild(1)?.GetChild(0);
-                if (healthbar?.name != "Remote UI Bar" || healthbar?.gameObject?.active != true)
+                Transform healthbar = UI.GetChild(1);
+                if (healthbar?.name != "RemoteUI" || healthbar?.gameObject?.active != true)
                 {
-                    MelonLogger.Warning("Could not get Remote Healthbar via GetChild");
-                    healthbar = UI.Find("RemoteUI/Remote UI Bar");
+                    MelonLogger.Warning("Could not get RemoteUI via GetChild");
+                    healthbar = UI.Find("RemoteUI");
                     if (healthbar == null || healthbar.gameObject?.active != true)
                     {
-                        MelonLogger.Error("Could not get Remote Healthbar via Find");
+                        MelonLogger.Error("Could not get RemoteUI via Find");
                         return null;
                     }
                 }
@@ -132,7 +143,7 @@ namespace HealthDisplayWithFont
         {
             static void Postfix(PlayerHealth __instance, PlayerController controller)
             {
-                AddHealthbarText(GetHealthbar(__instance.transform, controller.controllerType), controller.assignedPlayer);
+                AddHealthbarText(GetHealthbar(__instance.transform, controller.controllerType), controller.assignedPlayer, controller.controllerType);
             }
         }
 
