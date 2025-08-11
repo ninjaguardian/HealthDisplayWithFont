@@ -49,6 +49,16 @@ jobs:
             exit 1
           fi
 
+      - name: Check tag
+        shell: bash
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version_number="${GITHUB_REF#refs/tags/v}"
+          if [ "$version_number" != "$VERSIONNUM" ]; then
+            echo "Error: got version $version_number, expected $VERSIONNUM"
+            exit 1
+          fi
+
   build:
     runs-on: windows-latest
 
