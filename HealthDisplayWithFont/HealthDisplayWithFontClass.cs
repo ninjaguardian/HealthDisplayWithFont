@@ -12,11 +12,15 @@ using UnityEngine.TextCore.LowLevel;
 // Test with clones
 // The issue only occurs after the playerhealth is initlizied
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.2", "ninjaguardian")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.2", "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
 [assembly: MelonAuthorColor(255, 0, 160, 230)]
+
+[assembly: MelonPlatform(MelonPlatformAttribute.CompatiblePlatforms.WINDOWS_X64)]
+[assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
+[assembly: VerifyLoaderVersion(0, 7, 0, true)]
 
 namespace HealthDisplayWithFont
 {
