@@ -32,40 +32,37 @@ namespace HealthDisplayWithFont
         /// <inheritdoc/>
         public override void OnLateInitializeMelon()
         {
-            try
+            string[] fontPaths = new string[]
             {
-                string[] fontPaths = new string[]
-                {
-                    "font.ttf",
-                    "font.otf"
-                };
+                "font.ttf",
+                "font.otf"
+            };
 
-                foreach (string fontName in fontPaths)
+            foreach (string fontName in fontPaths)
+            {
+                try
                 {
-                    try
-                    {
-                        var loadedFont = TMP_FontAsset.CreateFontAsset(
-                            $@"UserData\HealthDisplayWithFont\{fontName}",
-                            0,
-                            90,
-                            5,
-                            GlyphRenderMode.SDFAA,
-                            1024,
-                            1024
-                        );
-                        loadedFont.hideFlags = HideFlags.HideAndDontSave;
-                        fontAsset = loadedFont;
-                        break;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
+                    var loadedFont = TMP_FontAsset.CreateFontAsset(
+                        $@"UserData\HealthDisplayWithFont\{fontName}",
+                        0,
+                        90,
+                        5,
+                        GlyphRenderMode.SDFAA,
+                        1024,
+                        1024
+                    );
+                    loadedFont.hideFlags = HideFlags.HideAndDontSave;
+                    fontAsset = loadedFont;
+                    break;
+                }
+                catch
+                {
+                    continue;
                 }
             }
-            catch (System.Exception ex)
+            if (fontAsset == null)
             {
-                MelonLogger.Warning($"Error loading font bundle. Using default font. Error: {ex.Message}");
+                MelonLogger.Warning("Could not load font.ttf or font.otf from UserData/HealthDisplayWithFont/");
             }
         }
 
