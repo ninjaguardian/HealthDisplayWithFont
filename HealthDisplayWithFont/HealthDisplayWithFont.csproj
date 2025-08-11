@@ -16,7 +16,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/ninjaguardian/HealthDisplayWithFont</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>0.1.3</VersionPrefix>
+		<VersionPrefix>0.2.0</VersionPrefix>
 		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
 		<FileVersion>$(VersionPrefix).0</FileVersion>
 		<PackageIcon>iconlowres.png</PackageIcon>

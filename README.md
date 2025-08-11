@@ -2,7 +2,7 @@
 ![Photo](https://raw.githubusercontent.com/ninjaguardian/HealthDisplayWithFont/master/icon.png)
 
 ## What is this
-This mod currently adds a number above your health bar that shows your HP in a custom font.
+This mod adds a number above all health bars that shows its HP in a custom font.
 
 ## Instructions
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)

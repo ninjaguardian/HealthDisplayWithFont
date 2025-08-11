@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using HealthDisplayWithFont;
-using Il2CppRUMBLE.Managers;
 using Il2CppRUMBLE.Players;
 using Il2CppRUMBLE.Players.Subsystems;
 using Il2CppTMPro;
@@ -9,10 +8,9 @@ using UnityEngine;
 using UnityEngine.TextCore.LowLevel;
 
 // Test with clones
-// TODO: make gh action to make sure version nums are correct
 // TODO: make remote text scale based on distance from camera
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.1.3", "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.2.0", "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]

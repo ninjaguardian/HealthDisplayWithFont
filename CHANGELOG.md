@@ -1,3 +1,7 @@
+# v0.2.0
+- Make it work for remote players.
+	- Currently, the text does not scale based on distance.
+
 # v0.1.3
 - No longer uses RMAPI.
 	- Gets everthing via HarmonyPatch.
