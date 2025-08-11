@@ -113,12 +113,48 @@ jobs:
         shell: pwsh
         run: |
           $output = .\steamcmd.exe +login anonymous +app_info_print 890550 +quit
-          $buildidLine = $output | Where-Object { $_ -match '"buildid"' }
+
+          $branchesIndex = -1
+          for ($i = 0; $i -lt $output.Count; $i++) {
+            if ($output[$i] -match '^\s*"branches"\s*$') { $branchesIndex = $i; break }
+          }
+          if ($branchesIndex -lt 0) {
+            Write-Error "Failed to retrieve RUMBLE version."
+            Write-Error "No '\"branches\"' block found."
+            Write-Host "Output from steamcmd:`n$output"
+            exit 1
+          }
+
+          $publicIndex = -1
+          for ($i = $branchesIndex + 1; $i -lt $output.Count; $i++) {
+            if ($output[$i] -match '^\s*"public"\s*$') { $publicIndex = $i; break }
+            if ($output[$i] -match '^\s*\}') { break }
+          }
+          if ($publicIndex -lt 0) {
+            Write-Error "Failed to retrieve RUMBLE version."
+            Write-Error "No '\"public\"' branch found inside '\"branches\"'."
+            Write-Host "Output from steamcmd:`n$output"
+            exit 1
+          }
+
+          $buildidLine = $null
+          for ($i = $publicIndex + 1; $i -lt $output.Count; $i++) {
+            if ($output[$i] -match '^\s*"buildid"\s*"[^"]*"\s*$') { $buildidLine = $output[$i]; break }
+            if ($output[$i] -match '^\s*\}') { break }
+          }
+          if ($buildidLine -eq $null) {
+            Write-Error "Failed to retrieve RUMBLE version."
+            Write-Error "No buildid found inside '\"public\"' branch."
+            Write-Host "Output from steamcmd:`n$output"
+            exit 1
+          }
+
           $buildid = $buildidLine -replace '.*"buildid"\s+"(\d+)".*', '$1'
           Write-Output "RUMBLEVER=$buildid" >> $env:GITHUB_ENV
           Write-Host "RUMBLEVER=$buildid"
           if (-not $buildid) {
             Write-Error "Failed to retrieve RUMBLE version."
+            Write-Error "Could not extract buildid from line: $buildidLine"
             Write-Host "Output from steamcmd:`n$output"
           }
 
