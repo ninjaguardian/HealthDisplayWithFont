@@ -26,9 +26,26 @@ jobs:
       - name: Check .csproj
         shell: bash
         run: |
-          version_number=$(sed -nE 's/.*<VersionPrefix>([^<]+)<\/VersionPrefix>.*/\1/p' HealthDisplayWithFont/HealthDisplayWithFont.csproj)
+          version_number=$(awk -F'[<>]' '/<VersionPrefix>/ {print $3}' HealthDisplayWithFont/HealthDisplayWithFont.csproj)
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
+            exit 1
+          fi
+
+      - name: Check .cs
+        shell: bash
+        run: |
+          version_number=$(awk -F'"' '/MelonInfo/ {print $4; exit}' HealthDisplayWithFont/HealthDisplayWithFont.cs)
+          if [ "$version_number" != "$VERSIONNUM" ]; then
+            echo "Error: got version $version_number, expected $VERSIONNUM"
+            exit 1
+          fi
+
+      - name: Check changelog
+        shell: bash
+        run: |
+          if [ "$(head -n 1 CHANGELOG.md)" != "# v$VERSIONNUM" ]; then
+            echo "Error: first line of CHANGELOG.md is not '# v$VERSIONNUM'"
             exit 1
           fi
 
