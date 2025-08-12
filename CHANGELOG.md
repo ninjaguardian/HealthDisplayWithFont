@@ -1,3 +1,6 @@
+# v0.3.0
+- Switch to [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
+
 # v0.2.0
 - Make it work for remote players.
 	- Currently, the text does not scale based on distance.
