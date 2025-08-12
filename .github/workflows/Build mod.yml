@@ -13,15 +13,21 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    outputs:
+      dllversion: ${{ steps.setversion.outputs.dllversion }}
+    
     steps:
       - uses: actions/checkout@v4
 
       - name: Get version from manifest
-        shell: bash
+        id: setversion
+        shell: pwsh
         run: |
-          version_number=$(jq -r '.version_number' manifest.json)
-          echo "VERSIONNUM=$version_number" >> $GITHUB_ENV
-          echo "Version number is $version_number"
+          $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
+          Write-Output "VERSIONNUM=$version" >> $env:GITHUB_ENV
+          Write-Output "dllversion=$version" >> $env:GITHUB_OUTPUT
+          Write-Host "DLLVERSION=$version"
 
       - name: Check .csproj
         shell: bash
@@ -60,13 +66,12 @@ jobs:
           fi
 
   build:
+    needs: check
     runs-on: windows-latest
-
-    outputs:
-      dllversion: ${{ steps.setversion.outputs.dllversion }}
 
     env:
       LIBSDIRPATH: ${{ github.workspace }}\deps
+      DLLVERSION: ${{ needs.check.outputs.dllversion }}
         
     steps:
       - uses: actions/checkout@v4
@@ -281,15 +286,6 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build --no-restore --verbosity normal /p:LIBSDIRPATH=${{ env.LIBSDIRPATH }}
 
-      - name: Get version number
-        id: setversion
-        shell: pwsh
-        run: |
-          $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
-          Write-Output "DLLVERSION=$version" >> $env:GITHUB_ENV
-          Write-Output "dllversion=$version" >> $env:GITHUB_OUTPUT
-          Write-Host "DLLVERSION=$version"
-
       - name: Artifact setup
         if: ${{ env.DLLVERSION != '' }}
         shell: pwsh
@@ -313,10 +309,10 @@ jobs:
          path: ${{ env.BINPATH }}\artifactsetup
 
   release:
-    needs: [build, check]
+    needs: [check, build]
     runs-on: ubuntu-latest
     env:
-      DLLVERSION: ${{ needs.build.outputs.dllversion }}
+      DLLVERSION: ${{ needs.check.outputs.dllversion }}
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
