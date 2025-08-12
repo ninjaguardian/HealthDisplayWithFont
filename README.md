@@ -38,9 +38,5 @@ Make sure you press enter and then hit save. If you are, ask the discord.
 ## Help And Other Resources
 Get help and find other resources in the [Modding Discord](https://discord.gg/fsbcnZgzfa)
 
-## Included font credit
-- [SDRAWKCABMIAY's video](https://youtu.be/wp4VaVm_XpI)
-- [File link](https://drive.google.com/drive/folders/1-Wr4TW4FVQ8j8EyKAMHPa-D2Srg05Fyk)
-
 
 [![CC0-1.0 License](https://img.shields.io/badge/License-CC0_1.0_Universal-green.svg)](https://github.com/ninjaguardian/HealthDisplayWithFont?tab=CC0-1.0-1-ov-file)
