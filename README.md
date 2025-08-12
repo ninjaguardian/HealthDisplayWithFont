@@ -1,7 +1,11 @@
+# NOTE: [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) is not required, but it is recommended.
+
+##
+
 # Health Display With Font
 ![Photo](https://raw.githubusercontent.com/ninjaguardian/HealthDisplayWithFont/master/icon.png)
 
-## What is this
+## What is this?
 This mod adds a number above all health bars that shows its HP in a custom font.
 
 ## Instructions
@@ -12,7 +16,16 @@ This mod adds a number above all health bars that shows its HP in a custom font.
 5. Play RUMBLE!
 
 ## Use your own font
-Take any .ttf or .otf font file and place it in the UserData\HealthDisplayWithFont folder. Then, rename it to font.ttf or font.otf respectively.
+1. Install [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
+2. Install [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
+3. Move any .ttf or .otf fonts into \UserData\Fontifier\fonts
+4. Press F10 to open Mod UI
+5. Go to Fontifier in the dropdown
+6. In the second dropdown, select 'Fonts List'
+7. Find the name of the font you want
+8. In the second dropdown, select 'HealthDisplayWithFont'
+9. Type in the name of the font you want (case-insensitive) and hit enter
+10. If it looks good, hit save
 
 ## Help And Other Resources
 Get help and find other resources in the [Modding Discord](https://discord.gg/fsbcnZgzfa)
