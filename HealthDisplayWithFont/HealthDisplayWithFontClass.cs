@@ -20,6 +20,8 @@ using UnityEngine.TextCore.LowLevel;
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 [assembly: VerifyLoaderVersion(0, 7, 0, true)]
 
+[assembly: MelonOptionalDependencies("Fontifier")]
+
 namespace HealthDisplayWithFont
 {
     /// <summary>
@@ -27,44 +29,10 @@ namespace HealthDisplayWithFont
     /// </summary>
     public class HealthDisplayWithFontClass : MelonMod
     {
-        private static TMP_FontAsset fontAsset;
-
-        /// <inheritdoc/>
-        public override void OnLateInitializeMelon()
-        {
-            string[] fontPaths = new string[]
-            {
-                "font.ttf",
-                "font.otf"
-            };
-
-            foreach (string fontName in fontPaths)
-            {
-                try
-                {
-                    var loadedFont = TMP_FontAsset.CreateFontAsset(
-                        $@"UserData\HealthDisplayWithFont\{fontName}",
-                        0,
-                        90,
-                        5,
-                        GlyphRenderMode.SDFAA,
-                        1024,
-                        1024
-                    );
-                    loadedFont.hideFlags = HideFlags.HideAndDontSave;
-                    fontAsset = loadedFont;
-                    break;
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-            if (fontAsset == null)
-            {
-                MelonLogger.Warning("Could not load font.ttf or font.otf from UserData/HealthDisplayWithFont/");
-            }
-        }
+        /// <summary>
+        /// The font that the text will be in.
+        /// </summary>
+        public static TMP_FontAsset fontAsset;
 
         private static void AddHealthbarText(Transform UIBAR, Player player, ControllerType controllerType)
         {
