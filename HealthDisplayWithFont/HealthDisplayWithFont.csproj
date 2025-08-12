@@ -100,12 +100,6 @@
 	  <Reference Include="UnityEngine.CoreModule">
 	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
 	  </Reference>
-	  <Reference Include="UnityEngine.TextCoreFontEngineModule">
-	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
-	  </Reference>
-	  <Reference Include="UnityEngine.TextRenderingModule">
-	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath>
-	  </Reference>
 	  <Reference Include="UnityEngine.UI">
 	    <HintPath>$(LibsDirPath)\MelonLoader\Il2CppAssemblies\UnityEngine.UI.dll</HintPath>
 	  </Reference>

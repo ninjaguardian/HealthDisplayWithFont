@@ -5,7 +5,6 @@ using Il2CppRUMBLE.Players.Subsystems;
 using Il2CppTMPro;
 using MelonLoader;
 using UnityEngine;
-using UnityEngine.TextCore.LowLevel;
 
 // Test with clones
 // TODO: make remote text scale based on distance from camera
@@ -36,7 +35,7 @@ namespace HealthDisplayWithFont
 
         private static void AddHealthbarText(Transform UIBAR, Player player, ControllerType controllerType)
         {
-            if (UIBAR == null) return;
+            if (UIBAR is null) return;
             GameObject healthBar = new("HealthText");
             healthBar.transform.SetParent(UIBAR, false);
 
@@ -57,7 +56,7 @@ namespace HealthDisplayWithFont
             textRef.text = player.Data.HealthPoints.ToString();
             textRef.alignment = TextAlignmentOptions.Center;
 
-            if (fontAsset != null)
+            if (fontAsset is not null)
             {
                 textRef.font = fontAsset;
             }
@@ -65,7 +64,7 @@ namespace HealthDisplayWithFont
 
         private static Transform GetHealthbar(Transform UI, ControllerType? controllerType)
         {
-            if (controllerType == null) return null;
+            if (controllerType is null) return null;
             if (controllerType == ControllerType.Local)
             {
                 Transform healthbar = UI.GetChild(0)?.GetChild(1);
@@ -73,7 +72,7 @@ namespace HealthDisplayWithFont
                 {
                     MelonLogger.Warning("Could not get Local Healthbar via GetChild");
                     healthbar = UI.Find("LocalUI/Local UI Bar");
-                    if (healthbar == null || healthbar.gameObject?.active != true)
+                    if (healthbar is null || healthbar.gameObject?.active != true)
                     {
                         MelonLogger.Error("Could not get Local Healthbar via Find");
                         return null;
@@ -88,7 +87,7 @@ namespace HealthDisplayWithFont
                 {
                     MelonLogger.Warning("Could not get RemoteUI via GetChild");
                     healthbar = UI.Find("RemoteUI");
-                    if (healthbar == null || healthbar.gameObject?.active != true)
+                    if (healthbar is null || healthbar.gameObject?.active != true)
                     {
                         MelonLogger.Error("Could not get RemoteUI via Find");
                         return null;
@@ -117,7 +116,7 @@ namespace HealthDisplayWithFont
             static void Postfix(PlayerHealth __instance, float currentHealth)
             {
                 TextMeshPro textMaybeNull = GetHealthbar(__instance.transform, __instance.parentController?.controllerType)?.Find("HealthText")?.GetComponent<TextMeshPro>();
-                if (textMaybeNull != null) {
+                if (textMaybeNull is not null) {
                     textMaybeNull.text = currentHealth.ToString();
                 }
             }
