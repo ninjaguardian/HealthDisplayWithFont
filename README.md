@@ -3,6 +3,10 @@
 # Health Display With Font
 ![Photo](https://raw.githubusercontent.com/ninjaguardian/HealthDisplayWithFont/master/icon.png)
 
+[![Github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3.2.0/assets/cozy/available/github_vector.svg)](https://github.com/ninjaguardian/HealthDisplayWithFont)
+[![Changelog](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3.2.0/assets/cozy/documentation/changelog_vector.svg)](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/changelog)
+[![Thunderstore](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3.2.0/assets/cozy/documentation/website_vector.svg)](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont)
+
 ## What is this?
 This mod adds a number above all health bars that shows its HP in a custom font (with [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)).
 
@@ -10,24 +14,32 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)
 2. Run RUMBLE without mods
 3. Drop Mods from .zip into RUMBLE's installation folder
+4. Install dependencies (If you want custom fonts)
+    - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
+    - [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
+    - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
+    - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
 5. Play RUMBLE!
 
 ## Use your own font
-1. Install [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
-2. Install [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
-3. Move any .ttf or .otf fonts into UserData\Fontifier\fonts
-4. Press F10 to open Mod UI
-5. Go to Fontifier in the dropdown
-6. In the second dropdown, select 'Fonts List'
-7. Find the name of the font you want
-8. In the second dropdown, select 'HealthDisplayWithFont'
-9. Type in the name of the font you want (case-insensitive) and hit enter
-10. If it looks good, hit save
+1. Install dependencies
+    - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
+    - [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
+    - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
+    - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
+2. Move any .ttf or .otf fonts into UserData\Fontifier\fonts
+3. Press F10 to open Mod UI
+4. Go to Fontifier in the dropdown
+5. In the second dropdown, select 'Fonts List'
+6. Find the name of the font you want
+7. In the second dropdown, select 'HealthDisplayWithFont'
+8. Type in the name of the font you want (case-insensitive) and hit enter
+9. If it looks good, hit save
 
-## Recommended mods
-| [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) | [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI) |
-|--|--|--|
-| [![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/icon.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [![Photo](https://raw.githubusercontent.com/Baumritter/Rumble_RumbleModUI/refs/heads/main/ThunderstoreStuff/icon.png)](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) | [![Photo](https://gcdn.thunderstore.io/live/repository/icons/UlvakSkillz-RumbleModdingAPI-3.7.4.png)](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI) |
+## What is [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)?
+[![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/Fontifier.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
+
+Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/versions) (though it may be missing features).
 
 ## I can't type in ModUI
 If you have UnityExplorer, hit F7 first. If not, ask the discord.
