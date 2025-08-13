@@ -41,7 +41,7 @@ jobs:
       - name: Check .cs
         shell: bash
         run: |
-          version_number=$(awk -F'"' '/MelonInfo/ {print $4; exit}' HealthDisplayWithFont/HealthDisplayWithFontClass.cs)
+          version_number=$(awk -F'"' '/ModVer *= *"/ {ver=$2} END {print ver}' HealthDisplayWithFont/HealthDisplayWithFontClass.cs)
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
             exit 1

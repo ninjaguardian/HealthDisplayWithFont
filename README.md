@@ -41,10 +41,10 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 
 Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/versions) (though it may be missing features).
 
-## I can't type in ModUI
+## "I can't type in ModUI"
 If you have UnityExplorer, hit F7 first. If not, ask the discord.
 
-## It's not saving
+## "It's not saving"
 Make sure you press enter and then hit save. If you are, ask the discord.
 
 ## Help And Other Resources

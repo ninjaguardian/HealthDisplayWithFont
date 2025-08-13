@@ -1,16 +1,21 @@
 ﻿using HarmonyLib;
 using HealthDisplayWithFont;
+using Il2CppRUMBLE.Managers;
 using Il2CppRUMBLE.Players;
 using Il2CppRUMBLE.Players.Subsystems;
 using Il2CppTMPro;
 using MelonLoader;
+using System;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 // Test with clones
 // TODO: make remote text scale based on distance from camera
 // TODO: dont block player nametag.
 
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), "HealthDisplayWithFont", "0.3.0", "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
+#region Assemblies
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), HealthDisplayWithFontModInfo.ModName, HealthDisplayWithFontModInfo.ModVer, "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
@@ -18,22 +23,40 @@ using UnityEngine;
 
 [assembly: MelonPlatform(MelonPlatformAttribute.CompatiblePlatforms.WINDOWS_X64)]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
-[assembly: VerifyLoaderVersion(0, 7, 0, true)]
+[assembly: VerifyLoaderVersion(HealthDisplayWithFontModInfo.MLVersion, true)]
 
 [assembly: MelonOptionalDependencies("Fontifier")]
+#endregion
 
 namespace HealthDisplayWithFont
 {
+    #region HealthDisplayWithFontModInfo
+    /// <summary>
+    /// Contains mod info.
+    /// </summary>
+    public static class HealthDisplayWithFontModInfo
+    {
+        /// <summary>
+        /// Mod name.
+        /// </summary>
+        public const string ModName = "HealthDisplayWithFont";
+        /// <summary>
+        /// Mod version.
+        /// </summary>
+        public const string ModVer = "0.3.0";
+        /// <summary>
+        /// Melonloader Version.
+        /// </summary>
+        public const string MLVersion = "0.7.0";
+    }
+    #endregion
+
     /// <summary>
     /// Adds text above all player healthbars with their health.
     /// </summary>
     public class HealthDisplayWithFontClass : MelonMod
     {
-        /// <summary>
-        /// The font that the text will be in.
-        /// </summary>
-        public static TMP_FontAsset fontAsset;
-
+        #region Healthbar stuff
         private static void AddHealthbarText(Transform UIBAR, Player player, ControllerType controllerType)
         {
             if (UIBAR == null) return;
@@ -57,10 +80,8 @@ namespace HealthDisplayWithFont
             textRef.text = player.Data.HealthPoints.ToString();
             textRef.alignment = TextAlignmentOptions.Center;
 
-            if (fontAsset != null)
-            {
-                textRef.font = fontAsset;
-            }
+            if (GetFont != null)
+                textRef.font = GetFont();
         }
 
         private static Transform GetHealthbar(Transform UI, ControllerType? controllerType)
@@ -101,7 +122,9 @@ namespace HealthDisplayWithFont
                 return null;
             }
         }
+        #endregion
 
+        #region Patches
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
         class PlayerHealthInitPatch
         {
@@ -122,5 +145,33 @@ namespace HealthDisplayWithFont
                 }
             }
         }
+        #endregion
+
+        #region Fontifier
+        private static Func<TMP_FontAsset> GetFont;
+
+        /// <inheritdoc/>
+        public override void OnInitializeMelon()
+        {
+            Type fontifierType = RegisteredMelons.FirstOrDefault(m => m.Info.Name == "Fontifier")?.GetType();
+            if (fontifierType != null)
+            {
+                GetFont = (Func<TMP_FontAsset>)fontifierType.GetMethod("RegisterMod", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { Info.Name, new EventHandler<EventArgs>(FontChanged) });
+            }
+        }
+
+        private static void FontChanged(object sender, EventArgs args)
+        {
+            TMP_FontAsset font = GetFont();
+            foreach (Player player in PlayerManager.instance.AllPlayers)
+            {
+                Transform UI = player.Controller?.transform?.Find("UI");
+                if (UI != null)
+                {
+                    GetHealthbar(UI, player.Controller.controllerType).Find("HealthText").GetComponent<TextMeshPro>().font = font;
+                }
+            }
+        }
+        #endregion
     }
 }
