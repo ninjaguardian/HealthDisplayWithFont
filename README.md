@@ -25,9 +25,9 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 10. If it looks good, hit save
 
 ## Recommended mods
-| [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) |
-|--|--|
-| [![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/icon.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [![Photo](https://raw.githubusercontent.com/Baumritter/Rumble_RumbleModUI/refs/heads/main/ThunderstoreStuff/icon.png)](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) |
+| [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) | [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI) |
+|--|--|--|
+| [![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/icon.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) | [![Photo](https://raw.githubusercontent.com/Baumritter/Rumble_RumbleModUI/refs/heads/main/ThunderstoreStuff/icon.png)](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI) | [![Photo](https://gcdn.thunderstore.io/live/repository/icons/UlvakSkillz-RumbleModdingAPI-3.7.4.png)](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI) |
 
 ## I can't type in ModUI
 If you have UnityExplorer, hit F7 first. If not, ask the discord.
