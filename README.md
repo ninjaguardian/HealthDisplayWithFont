@@ -16,7 +16,6 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 3. Drop Mods from .zip into RUMBLE's installation folder
 4. Install dependencies (If you want custom fonts)
     - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
-    - [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
     - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
     - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
 5. Play RUMBLE!
@@ -24,7 +23,6 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 ## Use your own font
 1. Install dependencies
     - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
-    - [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
     - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
     - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
 2. Move any .ttf or .otf fonts into UserData\Fontifier\fonts
@@ -39,7 +37,7 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 ## What is [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)?
 [![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/Fontifier.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
 
-Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/versions) (though it may be missing features).
+Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/versions) (though it may be missing features and break on non-windows platforms).
 
 ## "I can't type in ModUI"
 If you have UnityExplorer, hit F7 first. If not, ask the discord.

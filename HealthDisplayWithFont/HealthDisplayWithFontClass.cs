@@ -21,11 +21,8 @@ using UnityEngine;
 [assembly: MelonColor(255, 0, 160, 230)]
 [assembly: MelonAuthorColor(255, 0, 160, 230)]
 
-[assembly: MelonPlatform(MelonPlatformAttribute.CompatiblePlatforms.WINDOWS_X64)]
 [assembly: MelonPlatformDomain(MelonPlatformDomainAttribute.CompatibleDomains.IL2CPP)]
 [assembly: VerifyLoaderVersion(HealthDisplayWithFontModInfo.MLVersion, true)]
-
-[assembly: MelonOptionalDependencies("Fontifier")]
 #endregion
 
 namespace HealthDisplayWithFont
@@ -43,7 +40,7 @@ namespace HealthDisplayWithFont
         /// <summary>
         /// Mod version.
         /// </summary>
-        public const string ModVer = "0.3.0";
+        public const string ModVer = "0.3.1";
         /// <summary>
         /// Melonloader Version.
         /// </summary>

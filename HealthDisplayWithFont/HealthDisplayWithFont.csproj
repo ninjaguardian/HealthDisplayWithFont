@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		
@@ -16,16 +16,16 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/ninjaguardian/HealthDisplayWithFont</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<VersionPrefix>0.3.0</VersionPrefix>
+		<VersionPrefix>0.3.1</VersionPrefix>
 		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
 		<FileVersion>$(VersionPrefix).0</FileVersion>
 		<PackageIcon>iconlowres.png</PackageIcon>
 		<Platform>x64</Platform>
 		<Platforms>x64</Platforms>
 		<PlatformTarget>x64</PlatformTarget>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<Prefer32Bit>False</Prefer32Bit>
 		<PackageProjectUrl>https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont</PackageProjectUrl>
+		<SelfContained>false</SelfContained>
 
 		<LibsDirPath>$(LIBSDIRPATH)</LibsDirPath>
 		<LibsDirPath Condition="'$(LibsDirPath)'==''">C:\Program Files (x86)\Steam\steamapps\common\RUMBLE</LibsDirPath>

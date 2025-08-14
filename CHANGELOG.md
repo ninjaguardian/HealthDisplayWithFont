@@ -1,3 +1,7 @@
+# v0.3.1
+- Support [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) v1.1.0
+- Fix windows issues
+
 # v0.3.0
 - Switch to [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
 
