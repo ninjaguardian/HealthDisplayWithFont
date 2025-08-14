@@ -146,20 +146,17 @@ namespace HealthDisplayWithFont
 
         #region Fontifier
         private static Func<TMP_FontAsset> GetFont;
+        private static Func<string, TMP_FontAsset> FontFromName;
 
         /// <inheritdoc/>
         public override void OnInitializeMelon()
         {
-            Type fontifierType = RegisteredMelons.FirstOrDefault(m => m.Info.Name == "Fontifier")?.GetType();
-            if (fontifierType != null)
-            {
-                GetFont = (Func<TMP_FontAsset>)fontifierType.GetMethod("RegisterMod", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { Info.Name, new EventHandler<EventArgs>(FontChanged) });
-            }
+            if (RegisteredMelons.FirstOrDefault(m => m.Info.Name == "Fontifier")?.GetType() is Type fontifierType && fontifierType != null) (GetFont, FontFromName) = ((Func<TMP_FontAsset>, Func<string, TMP_FontAsset>))fontifierType.GetMethod("RegisterMod", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { this.Info.Name, new EventHandler<EventArgs>(FontChanged) });
         }
 
         private static void FontChanged(object sender, EventArgs args)
         {
-            TMP_FontAsset font = GetFont();
+            TMP_FontAsset font = FontFromName(((dynamic)args).Value);
             foreach (Player player in PlayerManager.instance.AllPlayers)
             {
                 Transform UI = player.Controller?.transform?.Find("UI");
