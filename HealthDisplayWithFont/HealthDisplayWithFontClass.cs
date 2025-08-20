@@ -44,7 +44,7 @@ namespace HealthDisplayWithFont
         /// <summary>
         /// Mod version.
         /// </summary>
-        public const string ModVer = "0.3.1";
+        public const string ModVer = "0.4.0";
         /// <summary>
         /// Melonloader Version.
         /// </summary>

@@ -1,3 +1,9 @@
+# v0.4.0
+- Update to [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) v1.1.2
+- Uses RMAPI again.
+- Opponent health text scales with distance to camera.
+- Make opponent health text fade in and out.
+
 # v0.3.1
 - Support [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier) v1.1.0
 - Fix windows issues
