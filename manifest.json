@@ -4,6 +4,7 @@
     "website_url": "https://github.com/ninjaguardian/HealthDisplayWithFont",
     "description": "This mod adds a number above all health bars that shows its HP in a custom font.",
     "dependencies": [
-        "LavaGang-MelonLoader-0.7.0"
+        "LavaGang-MelonLoader-0.7.0",
+        "UlvakSkillz-RumbleModdingAPI-4.0.0"
     ]
 }

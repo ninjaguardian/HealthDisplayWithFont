@@ -12,13 +12,14 @@ This mod adds a number above all health bars that shows its HP in a custom font 
 
 ## Instructions
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)
-2. Run RUMBLE without mods
-3. Drop Mods from .zip into RUMBLE's installation folder
-4. Install dependencies (If you want custom fonts)
+2. Install [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
+3. Run RUMBLE without mods
+4. Drop Mods from .zip into RUMBLE's installation folder
+5. Install dependencies (If you want custom fonts)
     - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
     - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
     - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
-5. Play RUMBLE!
+6. Play RUMBLE!
 
 ## Use your own font
 1. Install dependencies
