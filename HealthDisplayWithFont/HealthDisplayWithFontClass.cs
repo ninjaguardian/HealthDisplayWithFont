@@ -19,7 +19,7 @@ using UnityEngine;
 // TODO: ModUI for enabling or disabling healthbars
 
 #region Assemblies
-[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), HealthDisplayWithFontModInfo.ModName, HealthDisplayWithFontModInfo.ModVer, "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
+[assembly: MelonInfo(typeof(HealthDisplayWithFontClass), HealthDisplayWithFontModInfo.ModName, HealthDisplayWithFontModInfo.ModVersion, "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: MelonColor(255, 0, 160, 230)]
@@ -44,7 +44,7 @@ namespace HealthDisplayWithFont
         /// <summary>
         /// Mod version.
         /// </summary>
-        public const string ModVer = "0.4.0";
+        public const string ModVersion = "0.4.0";
         /// <summary>
         /// Melonloader Version.
         /// </summary>
