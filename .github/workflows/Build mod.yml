@@ -40,6 +40,7 @@ jobs:
       - name: Check .csproj
         shell: bash
         run: |
+          set -euo pipefail
           version_number=$(awk -F'[<>]' '/<VersionPrefix>/ {print $3}' ${{ vars.CSPROJ_LOCATION }})
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
@@ -49,6 +50,7 @@ jobs:
       - name: Check .cs
         shell: bash
         run: |
+          set -euo pipefail
           version_number=$(awk -F'"' '/const string ModVersion/ {print $2; exit}' ${{ vars.BUILDINFO_LOCATION }})
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
@@ -58,8 +60,9 @@ jobs:
       - name: Check changelog
         shell: bash
         run: |
-          if [ "$(head -n 1 CHANGELOG.md)" != "# v$VERSIONNUM" ]; then
-            echo "Error: first line of CHANGELOG.md is not '# v$VERSIONNUM'"
+          set -euo pipefail
+          if [ "$(head -n 1 CHANGELOG.md)" != "## v$VERSIONNUM" ]; then
+            echo "Error: first line of CHANGELOG.md is not '## v$VERSIONNUM'"
             exit 1
           fi
 
@@ -67,6 +70,7 @@ jobs:
         shell: bash
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
+          set -euo pipefail
           version_number="${GITHUB_REF#refs/tags/v}"
           if [ "$version_number" != "$VERSIONNUM" ]; then
             echo "Error: got version $version_number, expected $VERSIONNUM"
@@ -448,7 +452,7 @@ jobs:
 
           $startIndex = -1
           for ($i = 0; $i -lt $lines.Length; $i++) {
-            if ($lines[$i] -match "^# $version") {
+            if ($lines[$i] -match "^## $version") {
               $startIndex = $i
               break
             }
@@ -461,7 +465,7 @@ jobs:
 
           $endIndex = -1
           for ($j = $startIndex + 1; $j -lt $lines.Length; $j++) {
-            if ($lines[$j] -match "^# v") {
+            if ($lines[$j] -match "^## v") {
               $endIndex = $j
               break
             }

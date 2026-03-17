@@ -44,11 +44,11 @@ namespace HealthDisplayWithFont
         /// <summary>
         /// Mod version.
         /// </summary>
-        public const string ModVersion = "0.4.0";
+        public const string ModVersion = "0.4.1";
         /// <summary>
         /// Melonloader Version.
         /// </summary>
-        public const string MLVersion = "0.7.0";
+        public const string MLVersion = "0.7.1";
     }
     #endregion
 
@@ -249,7 +249,7 @@ namespace HealthDisplayWithFont
         /// <inheritdoc/>
         public override void OnInitializeMelon()
         {
-            HealthBarMaterial = RumbleModdingAPI.Calls.LoadAssetFromStream<Material>(this, $"{HealthDisplayWithFontModInfo.ModName}.healthbartextshader", "healthbartext");
+            HealthBarMaterial = RumbleModdingAPI.RMAPI.AssetBundles.LoadAssetFromStream<Material>(this, $"{HealthDisplayWithFontModInfo.ModName}.healthbartextshader", "healthbartext");
             HealthBarMaterial.hideFlags = HideFlags.HideAndDontSave;
             HealthBarMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
             if (FindMelon("Fontifier", "ninjaguardian")?.GetType() is Type fontifierType && fontifierType != null) (GetFont, FontFromName) = ((Func<bool, TMP_FontAsset>, Func<string, bool, TMP_FontAsset>))fontifierType.GetMethod("RegisterModCopy", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, new object[] { this.Info.Name, new EventHandler<EventArgs>(FontChanged) });
