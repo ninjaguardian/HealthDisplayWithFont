@@ -9,6 +9,7 @@
 
 ## What is this?
 This mod adds a number above all health bars that shows its HP in a custom font (with [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)).
+This is a continuation of [Health Display](https://thunderstore.io/c/rumble/p/CactusGod/Health_Display/) with more features.
 
 ## Instructions
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)
