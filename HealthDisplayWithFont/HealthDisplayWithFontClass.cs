@@ -17,6 +17,7 @@ using UnityEngine;
 // TODO: Fine tune size
 // TODO: Damage effect
 // TODO: ModUI for enabling or disabling healthbars
+// TODO: Replaymod sync with healthbar setting and fix overlap
 
 #region Assemblies
 [assembly: MelonInfo(typeof(HealthDisplayWithFontClass), HealthDisplayWithFontModInfo.ModName, HealthDisplayWithFontModInfo.ModVersion, "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
@@ -44,11 +45,15 @@ namespace HealthDisplayWithFont
         /// <summary>
         /// Mod version.
         /// </summary>
-        public const string ModVersion = "0.4.1";
+        public const string ModVersion = "0.4.2";
         /// <summary>
-        /// Melonloader Version.
+        /// MelonLoader Version.
         /// </summary>
-        public const string MLVersion = "0.7.1";
+        public const string MLVersion = "0.7.2";
+        /// <summary>
+        /// The name of the healthbar object.
+        /// </summary>
+        public const string HealthbarTextName = "HealthText";
     }
     #endregion
 
@@ -63,12 +68,18 @@ namespace HealthDisplayWithFont
         private static void AddHealthbarText(Transform? uiBar, PlayerController controller)
         {
             if (uiBar == null) return;
-            if (HealthbarMaterial == null)
+            if (_healthbarMaterial == null)
             {
                 MelonLogger.Error("Something really bad happened! (Context: HealthbarMaterial)", new Exception("Mod detected impossible state"));
                 return;
             }
-            GameObject healthText = new("HealthText");
+            if (uiBar.Find(HealthDisplayWithFontModInfo.HealthbarTextName) is { } otherHealthbar)
+            {
+                if (ControllerIsReplay(controller))
+                    otherHealthbar.gameObject.SetActive(true);
+                return;
+            }
+            GameObject healthText = new(HealthDisplayWithFontModInfo.HealthbarTextName);
             healthText.transform.SetParent(uiBar, false);
 
             TextMeshPro textRef = healthText.AddComponent<TextMeshPro>();
@@ -81,7 +92,7 @@ namespace HealthDisplayWithFont
             }
             else
             {
-                if (controller.transform.Find("NameTag")?.gameObject?.activeSelf == true)
+                if (controller.transform.Find("NameTag")?.gameObject.activeSelf == true)
                     healthText.SetActive(false);
                 healthText.transform.localPosition = new Vector3(0f, -0.05f, 0f);
                 healthText.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
@@ -93,55 +104,55 @@ namespace HealthDisplayWithFont
             textRef.SetText("{0}", controller.assignedPlayer.Data.HealthPoints);
             textRef.alignment = TextAlignmentOptions.Center;
 
-            if (GetFont == null) return;
+            if (_getFont == null) return;
 
             if (controller.controllerType == ControllerType.Local)
             {
-                textRef.font = GetFont(true);
+                textRef.font = _getFont(true);
                 return;
             }
 
-            TMP_FontAsset font = GetFont(true);
+            TMP_FontAsset font = _getFont(true);
             if (FontToShaderFont.TryGetValue(font, out TMP_FontAsset? cacheFont))
             {
                 textRef.font = cacheFont;
                 return;
             }
 
-            TMP_FontAsset newFont = GetFont(false);
+            TMP_FontAsset newFont = _getFont(false);
             textRef.font = newFont;
-            HealthbarMaterial.mainTexture = newFont.atlasTexture;
-            textRef.fontMaterial = HealthbarMaterial;
-            newFont.material = HealthbarMaterial;
+            _healthbarMaterial.mainTexture = newFont.atlasTexture;
+            textRef.fontMaterial = _healthbarMaterial;
+            newFont.material = _healthbarMaterial;
             FontToShaderFont[font] = newFont;
         }
 
-        private static Transform? GetHealthbarText(PlayerController? controller) => GetHealthbarText(controller?.transform?.Find("UI"), controller);
-        private static Transform? GetHealthbarText(Transform? UI, PlayerController? controller) => GetHealthbar(UI, controller?.controllerType)?.Find("HealthText");
+        private static Transform? GetHealthbarText(PlayerController? controller) => GetHealthbarText(controller?.transform.Find("UI"), controller);
+        private static Transform? GetHealthbarText(Transform? ui, PlayerController? controller) => GetHealthbar(ui, controller?.controllerType)?.Find(HealthDisplayWithFontModInfo.HealthbarTextName);
 
-        private static Transform? GetHealthbar(Transform? UI, ControllerType? controllerType)
+        private static Transform? GetHealthbar(Transform? ui, ControllerType? controllerType)
         {
-            if (UI == null) return null;
+            if (ui == null) return null;
             switch (controllerType)
             {
                 case null:
                     return null;
                 case ControllerType.Local:
                 {
-                    Transform? healthbar = UI.GetChild(0)?.GetChild(1);
+                    Transform? healthbar = ui.GetChild(0)?.GetChild(1);
                     if (healthbar?.name == "Local UI Bar") return healthbar;
                     MelonLogger.Warning("Could not get Local Healthbar via GetChild");
-                    healthbar = UI.Find("LocalUI/Local UI Bar");
+                    healthbar = ui.Find("LocalUI/Local UI Bar");
                     if (healthbar != null) return healthbar;
                     MelonLogger.Error("Could not get Local Healthbar via Find");
                     return null;
                 }
                 case ControllerType.Remote:
                 {
-                    Transform? healthbar = UI.GetChild(1);
+                    Transform? healthbar = ui.GetChild(1);
                     if (healthbar?.name == "RemoteUI") return healthbar;
                     MelonLogger.Warning("Could not get RemoteUI via GetChild");
-                    healthbar = UI.Find("RemoteUI");
+                    healthbar = ui.Find("RemoteUI");
                     if (healthbar != null) return healthbar;
                     MelonLogger.Error("Could not get RemoteUI via Find");
                     return null;
@@ -151,34 +162,36 @@ namespace HealthDisplayWithFont
                     return null;
             }
         }
+
+        private static bool ControllerIsReplay(PlayerController controller) => controller.transform.parent?.name == "Replay Players";
         #endregion
 
         #region Patches
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.Initialize))]
-        class PlayerHealthInitPatch
+        private static class PlayerHealthInitPatch
         {
-            static void Postfix(PlayerHealth __instance, PlayerController controller) =>
+            private static void Postfix(PlayerHealth __instance, PlayerController controller) =>
                 AddHealthbarText(GetHealthbar(__instance.transform, controller.controllerType), controller);
         }
 
         [HarmonyPatch(typeof(PlayerHealth), nameof(PlayerHealth.SetHealthBarPercentage))]
-        class SetHealthBarPercentagePatch
+        private static class SetHealthBarPercentagePatch
         {
-            static void Postfix(PlayerHealth __instance, float currentHealth) =>
+            private static void Postfix(PlayerHealth __instance, float currentHealth) =>
                 GetHealthbarText(__instance.transform, __instance.parentController)
                     ?.GetComponent<TextMeshPro>()
                     ?.SetText("{0}", currentHealth);
         }
 
         [HarmonyPatch(typeof(PlayerNameTag), nameof(PlayerNameTag.SetPlayerNameTagActive))]
-        class SetPlayerNameTagActivePatch
+        private static class SetPlayerNameTagActivePatch
         {
-            static void Prefix(PlayerNameTag __instance, bool state)
+            private static void Prefix(PlayerNameTag __instance, bool state)
             {
                 if (FadeActive.Contains(__instance)) return;
 
-                PlayerController controller = __instance.parentController;
-                if (controller?.controllerType != ControllerType.Remote || __instance.transform.parent != controller.transform)
+                PlayerController? controller = __instance.parentController;
+                if (controller?.controllerType != ControllerType.Remote || __instance.transform.parent != controller.transform || ControllerIsReplay(controller))
                     return;
 
                 GetHealthbarText(controller)?.gameObject.SetActive(!state);
@@ -188,12 +201,12 @@ namespace HealthDisplayWithFont
         private static readonly HashSet<PlayerNameTag> FadeActive = new();
 
         [HarmonyPatch(typeof(PlayerNameTag), nameof(PlayerNameTag.FadePlayerNameTag))]
-        class FadePlayerNameTagPatch
+        private static class FadePlayerNameTagPatch
         {
-            static void Prefix(PlayerNameTag __instance, bool on)
+            private static void Prefix(PlayerNameTag __instance, bool on)
             {
-                PlayerController controller = __instance.parentController;
-                if (controller?.controllerType != ControllerType.Remote || __instance.transform.parent != controller.transform)
+                PlayerController? controller = __instance.parentController;
+                if (controller?.controllerType != ControllerType.Remote || __instance.transform.parent != controller.transform || ControllerIsReplay(controller))
                     return;
 
                 Transform? healthbar = GetHealthbarText(controller);
@@ -242,16 +255,16 @@ namespace HealthDisplayWithFont
         #endregion
 
         #region Fontifier & Shader
-        private static Func<bool, TMP_FontAsset>? GetFont;
-        private static Func<string, bool, TMP_FontAsset>? FontFromName;
-        private static Material? HealthbarMaterial;
+        private static Func<bool, TMP_FontAsset>? _getFont;
+        private static Func<string, bool, TMP_FontAsset>? _fontFromName;
+        private static Material? _healthbarMaterial;
 
         /// <inheritdoc/>
         public override void OnInitializeMelon()
         {
-            HealthbarMaterial = RumbleModdingAPI.RMAPI.AssetBundles.LoadAssetFromStream<Material>(this, $"{HealthDisplayWithFontModInfo.ModName}.healthbartextshader", "healthbartext");
-            HealthbarMaterial.hideFlags = HideFlags.HideAndDontSave;
-            HealthbarMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+            _healthbarMaterial = RumbleModdingAPI.RMAPI.AssetBundles.LoadAssetFromStream<Material>(this, $"{HealthDisplayWithFontModInfo.ModName}.healthbartextshader", "healthbartext");
+            _healthbarMaterial.hideFlags = HideFlags.HideAndDontSave;
+            _healthbarMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
             if (FindMelon("Fontifier", "ninjaguardian")?.GetType() is not { } fontifierType) return;
             MethodInfo? method = fontifierType.GetMethod("RegisterModCopy", BindingFlags.Public | BindingFlags.Static);
             object[] param = { Info.Name, new EventHandler<EventArgs>(FontChanged) };
@@ -261,25 +274,25 @@ namespace HealthDisplayWithFont
                 MelonLogger.Error("Something really bad happened! (Context: Fontifier installed, cannot invoke)", new Exception("Mod detected impossible state"));
                 return;
             }
-            (GetFont, FontFromName) = ((Func<bool, TMP_FontAsset>, Func<string, bool, TMP_FontAsset>))res;
+            (_getFont, _fontFromName) = ((Func<bool, TMP_FontAsset>, Func<string, bool, TMP_FontAsset>))res;
         }
 
         private static void FontChanged(object? sender, EventArgs args)
         {
-            if (FontFromName == null || HealthbarMaterial == null)
+            if (_fontFromName == null || _healthbarMaterial == null)
             {
-                MelonLogger.Error($"Something really bad happened! (Context: FontFromName {FontFromName != null}, HealthbarMaterial {HealthbarMaterial != null})", new Exception("Mod detected impossible state"));
+                MelonLogger.Error($"Something really bad happened! (Context: FontFromName {_fontFromName != null}, HealthbarMaterial {_healthbarMaterial != null})", new Exception("Mod detected impossible state"));
                 return;
             }
-            TMP_FontAsset font = FontFromName(((dynamic)args).Value, true);
+            TMP_FontAsset font = _fontFromName(((dynamic)args).Value, true);
             TMP_FontAsset remoteFont;
             if (FontToShaderFont.TryGetValue(font, out TMP_FontAsset? cacheFont))
                 remoteFont = cacheFont;
             else
             {
-                remoteFont = FontFromName(((dynamic)args).Value, false);
-                HealthbarMaterial.mainTexture = remoteFont.atlasTexture;
-                remoteFont.material = HealthbarMaterial;
+                remoteFont = _fontFromName(((dynamic)args).Value, false);
+                _healthbarMaterial.mainTexture = remoteFont.atlasTexture;
+                remoteFont.material = _healthbarMaterial;
                 FontToShaderFont[font] = remoteFont;
             }
 
@@ -294,7 +307,7 @@ namespace HealthDisplayWithFont
                 }
 
                 healthbar.font = remoteFont;
-                healthbar.fontMaterial = HealthbarMaterial;
+                healthbar.fontMaterial = _healthbarMaterial;
             }
         }
         #endregion
