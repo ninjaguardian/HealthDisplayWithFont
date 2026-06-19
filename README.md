@@ -18,7 +18,7 @@ This is a continuation of [Health Display](https://thunderstore.io/c/rumble/p/Ca
     - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
     - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
     - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
-4. Drop Mods from .zip into RUMBLE's installation folder
+4. Drop Mods folder from .zip into RUMBLE's installation folder
 5. Play RUMBLE!
 
 ## Use your own font
