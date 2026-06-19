@@ -14,13 +14,12 @@ This is a continuation of [Health Display](https://thunderstore.io/c/rumble/p/Ca
 ## Instructions
 1. Install [MelonLoader](https://github.com/LavaGang/MelonLoader)
 2. Install [RumbleModdingAPI](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI)
-3. Run RUMBLE without mods
-4. Drop Mods from .zip into RUMBLE's installation folder
-5. Install dependencies (If you want custom fonts)
+3. Install dependencies (If you want custom fonts)
     - [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
     - [RumbleModUI](https://thunderstore.io/c/rumble/p/Baumritter/RumbleModUI)
     - [RumbleModUIPlus](https://thunderstore.io/c/rumble/p/ninjaguardian/RumbleModUIPlus)
-6. Play RUMBLE!
+4. Drop Mods from .zip into RUMBLE's installation folder
+5. Play RUMBLE!
 
 ## Use your own font
 1. Install dependencies
@@ -39,7 +38,7 @@ This is a continuation of [Health Display](https://thunderstore.io/c/rumble/p/Ca
 ## What is [Fontifier](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)?
 [![Photo](https://raw.githubusercontent.com/ninjaguardian/Fontifier/master/Fontifier.png)](https://thunderstore.io/c/rumble/p/ninjaguardian/Fontifier)
 
-Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/versions) (though it may be missing features and break on non-windows platforms).
+Fontifier makes it easier to select a font for HealthDisplayWithFont. If you don't want to install Fontifier but still want custom fonts, [install v0.2.0](https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont/v/0.2.0) (though it may be missing features and break on non-windows platforms).
 
 ## "I can't type in ModUI"
 If you have UnityExplorer, hit F7 first. If not, ask the discord.
