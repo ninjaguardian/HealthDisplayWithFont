@@ -1,6 +1,6 @@
 ## v0.4.2
 - Update to [RMAPI v5.3.0](https://thunderstore.io/c/rumble/p/UlvakSkillz/RumbleModdingAPI/v/5.3.0)
-- Update to [MelonLoader](https://github.com/lavagang/melonloader) 0.7.2
+- Update to [MelonLoader](https://github.com/lavagang/melonloader) v0.7.2
 - Partial [ReplayMod](https://thunderstore.io/c/rumble/p/ERRORMODS/ReplayMod) support
 	- Health text updates correctly with replays
 	- Known issues:

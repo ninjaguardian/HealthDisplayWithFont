@@ -19,7 +19,7 @@ jobs:
       dllversion: ${{ steps.setversion.outputs.dllversion }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: |
             manifest.json
@@ -86,7 +86,7 @@ jobs:
       DLLVERSION: ${{ needs.check.outputs.dllversion }}
         
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Get deps hash
         shell: pwsh
@@ -227,14 +227,8 @@ jobs:
         shell: pwsh
         run: Remove-Item steamcmdstuff -Recurse -Force
 
-      # TODO: Remove when gh actions uses a powershell with .net 10
-      - name: Update Powershell
-        shell: pwsh
-        continue-on-error: true
-        run: winget install Microsoft.PowerShell --accept-package-agreements --accept-source-agreements --disable-interactivity --silent
-
       - name: Checkout assemblies
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: plumguardian/il2cppassemblies
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -395,7 +389,7 @@ jobs:
       DLLVERSION: ${{ needs.check.outputs.dllversion }}
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           sparse-checkout: CHANGELOG.md
 
