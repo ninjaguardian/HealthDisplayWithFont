@@ -29,13 +29,12 @@ jobs:
 
       - name: Get version from manifest
         id: setversion
-        shell: pwsh
+        shell: bash
         run: |
-          $ErrorActionPreference = 'Stop'
-          $version = (Get-Content manifest.json | ConvertFrom-Json).version_number
-          Write-Output "VERSIONNUM=$version" >> $env:GITHUB_ENV
-          Write-Output "dllversion=$version" >> $env:GITHUB_OUTPUT
-          Write-Host "DLLVERSION=$version"
+          version=$(jq -r '.version_number' manifest.json)
+          echo "VERSIONNUM=$version" >> $GITHUB_ENV
+          echo "dllversion=$version" >> $GITHUB_OUTPUT
+          echo "DLLVERSION=$version"
 
       - name: Check .csproj
         shell: bash
@@ -92,12 +91,12 @@ jobs:
       - name: Get deps hash
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
-          $dependencies = (Get-Content manifest.json | ConvertFrom-Json).dependencies -join "`n"
+          $dependencies = (jq -r '.dependencies[]' manifest.json) -join "`n"
+
           $bytes = [System.Text.Encoding]::UTF8.GetBytes($dependencies)
-          $memoryStream = [System.IO.MemoryStream]::new($bytes)
-          $hash = Get-FileHash -InputStream $memoryStream -Algorithm SHA256
-          $lowerhash = $hash.Hash.ToLower()
+          $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
+          $lowerhash = [BitConverter]::ToString($hash).Replace("-", "").ToLowerInvariant()
+
           Write-Output "DEPSHASH=$lowerhash" >> $env:GITHUB_ENV
           Write-Host "DEPSHASH=$lowerhash"
           Write-Host "Dependencies:`n$dependencies"
@@ -114,15 +113,13 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
-          $deps = (Get-Content manifest.json | ConvertFrom-Json).dependencies
+          $deps = jq -r '.dependencies[]' manifest.json
           New-Item -ItemType Directory -Force -Path $env:LIBSDIRPATH | Out-Null
           foreach ($dep in $deps) {
             $parts = $dep -split '-'
             $user = $parts[0]; $pkg = $parts[1]; $ver = $parts[2]
             $url = "https://thunderstore.io/package/download/$user/$pkg/$ver"
             $out = Join-Path $env:LIBSDIRPATH "$($user)-$($pkg)-$($ver).zip"
-            Write-Host "Fetching $url → $out"
             Invoke-WebRequest -Uri $url -OutFile $out
           }
 
@@ -130,7 +127,6 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           $detectionPath = Join-Path $env:LIBSDIRPATH "*.zip"
           Get-ChildItem $detectionPath | ForEach-Object {
             $zip = $_.FullName
@@ -142,7 +138,6 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           $removedFiles = Get-ChildItem -Path $env:LIBSDIRPATH -File | Where-Object { $_.Name -ne "version.dll" }
           foreach ($file in $removedFiles) {
             Write-Host "Removing file: $($file.FullName)"
@@ -159,7 +154,6 @@ jobs:
       - name: Download steamcmd
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Path "steamcmdstuff" -Force
           Set-Location steamcmdstuff
           $steamcmdUrl = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
@@ -172,20 +166,16 @@ jobs:
       - name: Install steamcmd
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           Set-Location steamcmdstuff
           .\steamcmd.exe +quit
-          $code = $LASTEXITCODE
-          if ($code -eq 7) {
+          if ($LASTEXITCODE -eq 7) {
             Write-Host "SteamCMD returned exit code 7 (ignoring)."
-            $code = 0
+            exit 0
           }
-          exit $code
 
       - name: Get RUMBLE version
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           Set-Location steamcmdstuff
           $output = .\steamcmd.exe +login anonymous +app_info_print 890550 +quit
 
@@ -237,28 +227,11 @@ jobs:
         shell: pwsh
         run: Remove-Item steamcmdstuff -Recurse -Force
 
-      - name: Setup .NET SDK 10
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '10'
-
-      - name: Install Powershell and 7z
+      # TODO: Remove when gh actions uses a powershell with .net 10
+      - name: Update Powershell
         shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          winget upgrade winget --accept-package-agreements --accept-source-agreements --disable-interactivity
-          # TODO: switch off preview. make sure to change other steps that use preview. also remove install entirely when gh actions supports powershell with .net 10
-          winget install Microsoft.PowerShell.Preview --disable-interactivity
-          $Url = "https://www.7-zip.org/download.html"
-          $Html = Invoke-WebRequest -Uri $Url
-          $Html.Content -match 'Download 7-Zip (\d+\.\d+)'
-          $ver = $matches[1] -replace '\D', ''
-          $link = "https://www.7-zip.org/a/7z$($ver)-x64.msi"
-          Write-Host "Installing $($link)"
-          $msi = "$env:TEMP\7z.msi"
-          Invoke-WebRequest $link -OutFile $msi
-          msiexec /i $msi /quiet /norestart
-          Write-Host "Installed 7z"
+        continue-on-error: true
+        run: winget install Microsoft.PowerShell --accept-package-agreements --accept-source-agreements --disable-interactivity --silent
 
       - name: Checkout assemblies
         uses: actions/checkout@v6
@@ -266,18 +239,14 @@ jobs:
           repository: plumguardian/il2cppassemblies
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           path: il2cppassembliesrepo
-
-      - name: Setup powershell
-        shell: pwsh
-        run: echo "C:\Program Files\PowerShell" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          sparse-checkout: ${{ env.RUMBLEVER }}
 
       - name: Unpack assembly
-        shell: 7-preview\pwsh.exe -command "Copy-Item '{0}' '{0}.ps1'; . '{0}.ps1'"
+        shell: pwsh
         env:
           IL2CPPASSEMBLIES7ZIPPASSWORD: ${{ secrets.IL2CPPASSEMBLIES7ZIPPASSWORD }}
           PK8_B64: ${{ secrets.PK8 }}
         run: |
-          $ErrorActionPreference = 'Stop'
           $unpackDir = "unpackassembly"
           New-Item -ItemType Directory -Path $unpackDir -Force
           $assemblyParent = Join-Path $env:GITHUB_WORKSPACE 'il2cppassembliesrepo'
@@ -398,7 +367,6 @@ jobs:
         if: ${{ env.DLLVERSION != '' }}
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           $binPath = "${{ vars.DLLNAME_NO_EXT }}\bin\Release"
           New-Item -ItemType Directory -Force -Path $binPath\artifactsetup\Mods
           Move-Item -Path $binPath\${{ vars.DLLNAME_NO_EXT }}.dll -Destination $binPath\artifactsetup\Mods
@@ -412,7 +380,7 @@ jobs:
 
       - name: Upload build artifact
         if: ${{ env.DLLVERSION != '' }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
          name: ninjaguardian-${{ vars.DLLNAME_NO_EXT }}-${{ env.DLLVERSION }}
          path: ${{ env.BINPATH }}\artifactsetup
@@ -432,21 +400,18 @@ jobs:
           sparse-checkout: CHANGELOG.md
 
       - name: Download build artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: ninjaguardian-${{ vars.DLLNAME_NO_EXT }}-${{ env.DLLVERSION }}
           path: artifact-download
 
       - name: Zip artifact
         shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          Compress-Archive -Path artifact-download\* -DestinationPath ninjaguardian-${{ vars.DLLNAME_NO_EXT }}-${{ env.DLLVERSION }}.zip
+        run: Compress-Archive -Path artifact-download\* -DestinationPath ninjaguardian-${{ vars.DLLNAME_NO_EXT }}-${{ env.DLLVERSION }}.zip
 
       - name: Extract changelog for release
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           $version = "v${{ env.DLLVERSION }}"
           $lines = Get-Content CHANGELOG.md
 
@@ -484,7 +449,7 @@ jobs:
           Write-Host "$body"
 
       - name: Create GitHub Release and upload artifact
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ninjaguardian-${{ vars.DLLNAME_NO_EXT }}-${{ env.DLLVERSION }}.zip
           body: ${{ env.body }}
