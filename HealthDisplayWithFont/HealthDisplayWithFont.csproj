@@ -7,10 +7,10 @@
 		
 		<Company>$(Authors)</Company>
 		<Title>Health Display With Font</Title>
-		<Authors>ninjaguardian (github)</Authors>
+		<Authors>ninjaguardian</Authors>
 		<Description>Shows health above healthbar with a chosen font</Description>
-		<Copyright>Copyright © 2025 ninjaguardian (github), This work is dedicated to the public domain under CC0 1.0.</Copyright>
-		<PackageLicenseExpression>CC0-1.0</PackageLicenseExpression>
+		<Copyright>Copyright © 2026 ninjaguardian</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
