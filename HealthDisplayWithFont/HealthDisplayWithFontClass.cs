@@ -17,7 +17,7 @@ using UnityEngine;
 // TODO: Fine tune size
 // TODO: Damage effect
 // TODO: ModUI for enabling or disabling healthbars
-// TODO: Replaymod sync with healthbar setting and fix overlap
+// TODO: ReplayMod sync with healthbar setting and fix overlap
 
 #region Assemblies
 [assembly: MelonInfo(typeof(HealthDisplayWithFontClass), HealthDisplayWithFontModInfo.ModName, HealthDisplayWithFontModInfo.ModVersion, "ninjaguardian", "https://thunderstore.io/c/rumble/p/ninjaguardian/HealthDisplayWithFont")]
@@ -70,7 +70,7 @@ namespace HealthDisplayWithFont
             if (uiBar == null) return;
             if (_healthbarMaterial == null)
             {
-                MelonLogger.Error("Something really bad happened! (Context: HealthbarMaterial)", new Exception("Mod detected impossible state"));
+                Melon<HealthDisplayWithFontClass>.Logger.Error("Something really bad happened! (Context: HealthbarMaterial)", new Exception("Mod detected impossible state"));
                 return;
             }
             if (uiBar.Find(HealthDisplayWithFontModInfo.HealthbarTextName) is { } otherHealthbar)
@@ -141,24 +141,24 @@ namespace HealthDisplayWithFont
                 {
                     Transform? healthbar = ui.GetChild(0)?.GetChild(1);
                     if (healthbar?.name == "Local UI Bar") return healthbar;
-                    MelonLogger.Warning("Could not get Local Healthbar via GetChild");
+                    Melon<HealthDisplayWithFontClass>.Logger.Warning("Could not get Local Healthbar via GetChild");
                     healthbar = ui.Find("LocalUI/Local UI Bar");
                     if (healthbar != null) return healthbar;
-                    MelonLogger.Error("Could not get Local Healthbar via Find");
+                    Melon<HealthDisplayWithFontClass>.Logger.Error("Could not get Local Healthbar via Find");
                     return null;
                 }
                 case ControllerType.Remote:
                 {
                     Transform? healthbar = ui.GetChild(1);
                     if (healthbar?.name == "RemoteUI") return healthbar;
-                    MelonLogger.Warning("Could not get RemoteUI via GetChild");
+                    Melon<HealthDisplayWithFontClass>.Logger.Warning("Could not get RemoteUI via GetChild");
                     healthbar = ui.Find("RemoteUI");
                     if (healthbar != null) return healthbar;
-                    MelonLogger.Error("Could not get RemoteUI via Find");
+                    Melon<HealthDisplayWithFontClass>.Logger.Error("Could not get RemoteUI via Find");
                     return null;
                 }
                 default:
-                    MelonLogger.Warning($"Unknown controller type: {controllerType}");
+                    Melon<HealthDisplayWithFontClass>.Logger.Warning($"Unknown controller type: {controllerType}");
                     return null;
             }
         }
@@ -271,17 +271,17 @@ namespace HealthDisplayWithFont
             object? res = method?.Invoke(null, param);
             if (res == null)
             {
-                MelonLogger.Error("Something really bad happened! (Context: Fontifier installed, cannot invoke)", new Exception("Mod detected impossible state"));
+                LoggerInstance.Error("Something really bad happened! (Context: Fontifier installed, cannot invoke)", new Exception("Mod detected impossible state"));
                 return;
             }
             (_getFont, _fontFromName) = ((Func<bool, TMP_FontAsset>, Func<string, bool, TMP_FontAsset>))res;
         }
 
-        private static void FontChanged(object? sender, EventArgs args)
+        private void FontChanged(object? sender, EventArgs args)
         {
             if (_fontFromName == null || _healthbarMaterial == null)
             {
-                MelonLogger.Error($"Something really bad happened! (Context: FontFromName {_fontFromName != null}, HealthbarMaterial {_healthbarMaterial != null})", new Exception("Mod detected impossible state"));
+                LoggerInstance.Error($"Something really bad happened! (Context: FontFromName {_fontFromName != null}, HealthbarMaterial {_healthbarMaterial != null})", new Exception("Mod detected impossible state"));
                 return;
             }
             TMP_FontAsset font = _fontFromName(((dynamic)args).Value, true);
